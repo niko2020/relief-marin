@@ -159,6 +159,7 @@
             overflow: hidden;
             background: var(--surface);
             touch-action: pan-x pan-y pinch-zoom;
+            min-height: 0;
         }
         
         .map-layer {
@@ -174,13 +175,32 @@
         }
         
         .base-layer {
-            background-image: 
+            background: 
                 radial-gradient(circle at 30% 60%, rgba(14, 165, 233, 0.1) 0%, transparent 60%),
-                radial-gradient(circle at 70% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
+                radial-gradient(circle at 70% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+                var(--surface);
         }
         
         .overlay-layer {
             opacity: 0.7;
+        }
+        
+        /* Debug info for missing images */
+        .map-layer.no-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-align: center;
+            background: var(--surface-light);
+        }
+        
+        .map-layer.no-image::before {
+            content: '🗺️ Image en cours de chargement...';
+            padding: 20px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 8px;
         }
         
         /* GPS Marker */
@@ -702,13 +722,14 @@
             justify-content: center;
             z-index: 30;
             transition: all 0.5s ease;
-            padding: 16px;
+            padding: max(env(safe-area-inset-top), 20px) max(env(safe-area-inset-right), 16px) max(env(safe-area-inset-bottom), 20px) max(env(safe-area-inset-left), 16px);
         }
         
         .welcome-content {
             text-align: center;
             max-width: 320px;
-            padding: 24px 16px;
+            padding: 20px;
+            width: 100%;
         }
         
         .welcome-icon {
@@ -741,7 +762,7 @@
         }
         
         .get-started-btn {
-            padding: 14px 24px;
+            padding: 16px 24px;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             border: none;
             border-radius: 8px;
@@ -753,7 +774,9 @@
                 0 4px 12px rgba(14, 165, 233, 0.3),
                 0 2px 4px rgba(0, 0, 0, 0.1);
             font-size: 0.9rem;
-            min-height: 48px;
+            min-height: 52px;
+            width: 100%;
+            max-width: 280px;
         }
         
         .get-started-btn:hover, .get-started-btn:active {
@@ -761,6 +784,18 @@
             box-shadow: 
                 0 8px 20px rgba(14, 165, 233, 0.4),
                 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .welcome-tips {
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: center;
+            line-height: 1.3;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
         .image-loading {
@@ -882,6 +917,44 @@
             .coordinates-display {
                 font-size: 0.7rem;
             }
+            
+            /* Welcome screen mobile adjustments */
+            .welcome-screen {
+                padding: max(env(safe-area-inset-top), 15px) max(env(safe-area-inset-right), 12px) max(env(safe-area-inset-bottom), 15px) max(env(safe-area-inset-left), 12px);
+            }
+            
+            .welcome-content {
+                max-width: 300px;
+                padding: 16px 8px;
+            }
+            
+            .welcome-icon {
+                font-size: 40px;
+                margin-bottom: 12px;
+            }
+            
+            .welcome-title {
+                font-size: 1.1rem;
+                margin-bottom: 10px;
+            }
+            
+            .welcome-subtitle {
+                font-size: 0.8rem;
+                margin-bottom: 20px;
+            }
+            
+            .get-started-btn {
+                padding: 14px 20px;
+                font-size: 0.85rem;
+                min-height: 48px;
+                max-width: 100%;
+            }
+            
+            .welcome-tips {
+                margin-top: 16px;
+                font-size: 0.7rem;
+                padding: 10px;
+            }
         }
         
         /* Small mobile devices */
@@ -895,6 +968,23 @@
                 height: 44px;
                 font-size: 16px;
             }
+            
+            .welcome-content {
+                max-width: 280px;
+                padding: 12px 4px;
+            }
+            
+            .welcome-icon {
+                font-size: 36px;
+            }
+            
+            .welcome-title {
+                font-size: 1rem;
+            }
+            
+            .welcome-subtitle {
+                font-size: 0.75rem;
+            }
         }
         
         /* Landscape mobile */
@@ -905,6 +995,40 @@
             
             .fab-container {
                 top: 35%;
+            }
+            
+            .welcome-screen {
+                padding: max(env(safe-area-inset-top), 10px) max(env(safe-area-inset-right), 12px) max(env(safe-area-inset-bottom), 10px) max(env(safe-area-inset-left), 12px);
+            }
+            
+            .welcome-content {
+                padding: 12px 8px;
+                max-width: 400px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                height: 100%;
+            }
+            
+            .welcome-icon {
+                font-size: 32px;
+                margin-bottom: 8px;
+            }
+            
+            .welcome-title {
+                font-size: 1rem;
+                margin-bottom: 8px;
+            }
+            
+            .welcome-subtitle {
+                font-size: 0.75rem;
+                margin-bottom: 16px;
+            }
+            
+            .welcome-tips {
+                margin-top: 12px;
+                font-size: 0.65rem;
+                padding: 8px;
             }
         }
         
@@ -965,9 +1089,11 @@
                     <button class="get-started-btn" id="getStartedBtn">
                         Découvrir les cartes
                     </button>
-                    <div style="margin-top: 16px; font-size: 0.7rem; color: var(--text-secondary); text-align: center;">
-                        📱 Optimisé pour mobile<br>
-                        🔄 Pinch pour zoomer • Double-tap pour centrer
+                    <div class="welcome-tips">
+                        📱 <strong>Contrôles tactiles :</strong><br>
+                        • Pinch pour zoomer/dézoomer<br>
+                        • Double-tap pour centrer<br>
+                        • Glissez pour explorer
                     </div>
                 </div>
             </div>
@@ -1147,70 +1273,135 @@
             
             async loadImages() {
                 const imageTypes = ['maps', 'relief', 'satellite'];
-                const loadPromises = imageTypes.map(type => this.loadImage(type));
                 
-                try {
-                    await Promise.all(loadPromises);
-                    this.elements.imageLoading.style.display = 'none';
-                    this.displayInitialImages();
-                } catch (error) {
-                    throw new Error(`Erreur de chargement des images: ${error.message}`);
+                this.updateStatus('Chargement des images...');
+                
+                for (const type of imageTypes) {
+                    try {
+                        await this.loadImage(type);
+                    } catch (error) {
+                        console.warn(`Erreur chargement ${type}:`, error);
+                        this.images[type] = this.generatePlaceholderImage(type);
+                    }
                 }
+                
+                this.elements.imageLoading.style.display = 'none';
+                this.displayInitialImages();
+                this.updateStatus('Images chargées - Prêt');
             }
             
             loadImage(type) {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
+                    
+                    const timeout = setTimeout(() => {
+                        console.warn(`Timeout pour ${type}, utilisation placeholder`);
+                        reject(new Error('Timeout'));
+                    }, 5000);
+                    
                     img.onload = () => {
+                        clearTimeout(timeout);
                         this.images[type] = img.src;
+                        console.log(`✅ Image ${type} chargée`);
                         resolve();
                     };
+                    
                     img.onerror = () => {
-                        console.warn(`Image ${type} non trouvée, utilisation d'une image par défaut`);
-                        this.images[type] = this.generatePlaceholderImage(type);
-                        resolve();
+                        clearTimeout(timeout);
+                        console.warn(`❌ Image ${type} non trouvée`);
+                        reject(new Error('Image not found'));
                     };
-                    img.src = `media/${type}.jpg`;
+                    
+                    // Ajouter un cache buster et essayer différentes extensions
+                    const timestamp = Date.now();
+                    img.src = `media/${type}.jpg?v=${timestamp}`;
                 });
             }
             
             generatePlaceholderImage(type) {
                 const canvas = document.createElement('canvas');
-                canvas.width = 400;
-                canvas.height = 300;
+                canvas.width = 800;
+                canvas.height = 600;
                 const ctx = canvas.getContext('2d');
                 
                 // Background gradient
-                const gradient = ctx.createLinearGradient(0, 0, 400, 300);
+                const gradient = ctx.createLinearGradient(0, 0, 800, 600);
                 if (type === 'maps') {
                     gradient.addColorStop(0, '#0ea5e9');
-                    gradient.addColorStop(1, '#06b6d4');
+                    gradient.addColorStop(0.5, '#0284c7');
+                    gradient.addColorStop(1, '#0369a1');
                 } else if (type === 'relief') {
                     gradient.addColorStop(0, '#10b981');
-                    gradient.addColorStop(1, '#059669');
+                    gradient.addColorStop(0.5, '#059669');
+                    gradient.addColorStop(1, '#047857');
                 } else {
                     gradient.addColorStop(0, '#8b5cf6');
-                    gradient.addColorStop(1, '#7c3aed');
+                    gradient.addColorStop(0.5, '#7c3aed');
+                    gradient.addColorStop(1, '#6d28d9');
                 }
                 
                 ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, 400, 300);
+                ctx.fillRect(0, 0, 800, 600);
                 
-                // Text
+                // Add some pattern/texture
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                for (let i = 0; i < 20; i++) {
+                    const x = Math.random() * 800;
+                    const y = Math.random() * 600;
+                    const radius = Math.random() * 50 + 10;
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Title
                 ctx.fillStyle = 'white';
-                ctx.font = '24px Arial';
+                ctx.font = 'bold 48px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText(type.toUpperCase(), 200, 150);
-                ctx.font = '14px Arial';
-                ctx.fillText('Image d\'exemple', 200, 180);
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = 4;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 2;
                 
-                return canvas.toDataURL();
+                const titles = {
+                    maps: 'CARTE MARINE',
+                    relief: 'RELIEF SOUS-MARIN', 
+                    satellite: 'VUE SATELLITE'
+                };
+                
+                ctx.fillText(titles[type] || type.toUpperCase(), 400, 250);
+                
+                // Subtitle
+                ctx.font = '24px Arial';
+                ctx.fillText('Image de démonstration', 400, 300);
+                
+                // Instructions
+                ctx.font = '18px Arial';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.fillText('Placez vos images dans le dossier "media/"', 400, 380);
+                ctx.fillText(`Nommez ce fichier: ${type}.jpg`, 400, 410);
+                
+                return canvas.toDataURL('image/jpeg', 0.8);
             }
             
             displayInitialImages() {
-                this.elements.baseLayer.style.backgroundImage = `url(${this.images[this.currentBase]})`;
-                this.elements.overlayLayer.style.backgroundImage = `url(${this.images[this.currentOverlay]})`;
+                // S'assurer que les images sont bien affichées
+                this.elements.baseLayer.style.backgroundImage = `url("${this.images[this.currentBase]}")`;
+                this.elements.overlayLayer.style.backgroundImage = `url("${this.images[this.currentOverlay]}")`;
+                
+                // Forcer le rendu
+                this.elements.baseLayer.style.backgroundSize = 'contain';
+                this.elements.baseLayer.style.backgroundRepeat = 'no-repeat';
+                this.elements.baseLayer.style.backgroundPosition = 'center';
+                
+                this.elements.overlayLayer.style.backgroundSize = 'contain';
+                this.elements.overlayLayer.style.backgroundRepeat = 'no-repeat';
+                this.elements.overlayLayer.style.backgroundPosition = 'center';
+                
                 this.updateImageOptions();
+                
+                console.log('✅ Images initiales affichées');
+                console.log('Base:', this.currentBase, 'Overlay:', this.currentOverlay);
             }
             
             initializeEventListeners() {
@@ -1241,6 +1432,36 @@
                         this.selectImageLayer(imageType);
                     });
                 });
+                
+                // Debug info (long press on status)
+                let statusPressTimer;
+                this.elements.statusText.addEventListener('touchstart', (e) => {
+                    statusPressTimer = setTimeout(() => {
+                        this.showDebugInfo();
+                    }, 2000);
+                });
+                
+                this.elements.statusText.addEventListener('touchend', () => {
+                    clearTimeout(statusPressTimer);
+                });
+            }
+            
+            showDebugInfo() {
+                const debugInfo = [
+                    `📊 État des images:`,
+                    `• Maps: ${this.images.maps ? (this.images.maps.startsWith('data:') ? '🎨 Démo' : '✅ Réelle') : '❌ Manquante'}`,
+                    `• Relief: ${this.images.relief ? (this.images.relief.startsWith('data:') ? '🎨 Démo' : '✅ Réelle') : '❌ Manquante'}`,
+                    `• Satellite: ${this.images.satellite ? (this.images.satellite.startsWith('data:') ? '🎨 Démo' : '✅ Réelle') : '❌ Manquante'}`,
+                    ``,
+                    `🔄 Couches actuelles:`,
+                    `• Base: ${this.currentBase}`,
+                    `• Overlay: ${this.currentOverlay}`,
+                    ``,
+                    `📍 GPS: ${this.currentPosition ? '✅ Actif' : '⏸️ Inactif'}`,
+                    `🌍 Géoréf: ${this.georeferencing.latNorth ? '✅ Configuré' : '⏸️ Non configuré'}`
+                ].join('\n');
+                
+                alert(debugInfo);
             }
             
             hideWelcome() {
@@ -1249,7 +1470,22 @@
                     this.elements.welcomeScreen.style.display = 'none';
                 }, 500);
                 
-                setTimeout(() => this.showNotification('Bienvenue ! Explorez vos cartes marines 🌊'), 1000);
+                // Afficher les informations de debug
+                setTimeout(() => {
+                    const hasImages = Object.values(this.images).some(img => img && !img.includes('data:image/canvas'));
+                    if (hasImages) {
+                        this.showNotification('✅ Cartes chargées ! Explorez avec pinch & zoom 🌊');
+                    } else {
+                        this.showNotification('📁 Images de démo - Ajoutez vos cartes dans media/', 'warning');
+                    }
+                    
+                    // Message explicatif après 3 secondes
+                    setTimeout(() => {
+                        if (!hasImages) {
+                            this.showNotification('💡 Tip: Créez un dossier "media" avec maps.jpg, relief.jpg, satellite.jpg', 'info');
+                        }
+                    }, 3000);
+                }, 1000);
             }
             
             cycleLayers() {
@@ -1526,7 +1762,27 @@
             
             updateStatus(message) {
                 this.elements.statusText.textContent = message;
-                this.elements.statusDot.style.background = 'var(--accent)';
+                
+                // Indicateur visuel selon l'état
+                const hasRealImages = Object.values(this.images).some(img => 
+                    img && !img.startsWith('data:image/canvas') && !img.includes('data:image/canvas')
+                );
+                
+                if (message.includes('chargées')) {
+                    if (hasRealImages) {
+                        this.elements.statusDot.style.background = 'var(--accent)';
+                        this.elements.statusText.textContent = 'Images réelles chargées';
+                    } else {
+                        this.elements.statusDot.style.background = 'var(--warning)';
+                        this.elements.statusText.textContent = 'Images de démo';
+                    }
+                } else if (message.includes('Chargement')) {
+                    this.elements.statusDot.style.background = 'var(--primary)';
+                } else {
+                    this.elements.statusDot.style.background = 'var(--accent)';
+                }
+                
+                console.log(`📊 Status: ${message}`);
             }
             
             showNotification(message, type = 'success') {
