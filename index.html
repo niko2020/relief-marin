@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Relief Marin</title>
+    <title>Relief Marin - Debug</title>
     
     <!-- PWA Meta Tags -->
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVsaWVmIE1hcmluIC0gVmlzdWFsaXNldXIgU291cy1NYXJpbiIsInNob3J0X25hbWUiOiJSZWxpZWZNYXJpbiIsInN0YXJ0X3VybCI6Ii4vIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJvcmllbnRhdGlvbiI6ImFueSIsInRoZW1lX2NvbG9yIjoiIzBmMTcyYSIsImJhY2tncm91bmRfY29sb3IiOiIjMGYxNzJhIiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU1USTRJaUJvWldsbmFIUTlJakV5T0NJaVlTQTlJakV1TVNJZ2VHMXNibk05SW1oMGRIQTZMeTkzZDNjdWR6TXViM0puTHpJd01EQXZjM1puSWo0Z1BHRGxabk0rUEhKaFpHbGhiRWR5WVdScFpXNTBJR2xrUFNKblpYQjRQR2xrSWlCamVEMGlOalFpSUdONVBTSTJOQ0lpSUhJOUlqVXdJaUJuY21Ga2FXVnVkRlZ1YVhSelBTSmxibVIwY0VOdmJHOXlJaUJuY21Ga2FXVnVkRlJ5WVc1elptOXliVDBpY0c5c1lYSWdNaUErUEhOMGIzQWdhVzVrWlhnOUlqQXVNU0lnYzNSdmNDMWpiMnh2Y2owaVVrdENRaGhEV2lneE5UUXNPRGtzTnpGYmF3NXBZaUJrWVhONFpXUWdKVG9nTXpKZ2REQnpJREl5WEdNbk9XazVSdUl4V1E9PUNTOXTRFM2xDbWxrejkxb2OOXN6ZVlIRGRIRjRjbklCb3lqcUxUWjdVdVhYbFNPWVJBaTNXRVhGcU0zZ0hROCIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVsaWVmIE1hcmluIiwic2hvcnRfbmFtZSI6IlJlbGllZk1hcmluIiwic3RhcnRfdXJsIjoiLi8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsInRoZW1lX2NvbG9yIjoiIzBmMTcyYSIsImJhY2tncm91bmRfY29sb3IiOiIjMGYxNzJhIn0=">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -39,65 +39,39 @@
         }
         
         body {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--background);
             color: var(--text-primary);
-            overflow: hidden;
             height: 100vh;
-            -webkit-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
             -webkit-tap-highlight-color: transparent;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            left: 0;
-        }
-        
-        /* Animated Background */
-        .app-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: 
-                radial-gradient(600px circle at 20% 30%, rgba(14, 165, 233, 0.15) 0%, transparent 50%),
-                radial-gradient(800px circle at 80% 70%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
-                radial-gradient(400px circle at 40% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
-                linear-gradient(135deg, var(--background) 0%, #1a202c 100%);
-            animation: backgroundFloat 20s ease-in-out infinite;
-        }
-        
-        @keyframes backgroundFloat {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(1deg); }
         }
         
         .app-container {
             display: flex;
             flex-direction: column;
             height: 100vh;
+            height: 100dvh;
             position: relative;
         }
         
-        /* Header Design */
         .app-header {
             background: var(--glass);
             backdrop-filter: var(--blur);
             -webkit-backdrop-filter: var(--blur);
             border-bottom: 1px solid var(--border);
-            padding: 20px;
-            position: relative;
-            z-index: 100;
+            padding: max(env(safe-area-inset-top), 12px) 16px 12px 16px;
+            flex-shrink: 0;
         }
         
         .header-content {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            max-width: 100%;
         }
         
         .app-title {
@@ -127,100 +101,80 @@
             background-clip: text;
         }
         
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
+        .debug-info {
+            font-size: 0.7rem;
+            color: var(--warning);
+            font-weight: 600;
         }
         
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--accent);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        /* Map Container */
         .map-viewport {
             flex: 1;
             position: relative;
             overflow: hidden;
-            background: var(--surface);
+            background: linear-gradient(135deg, var(--surface) 0%, #1a202c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: pan-x pan-y pinch-zoom;
         }
         
-        .map-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .debug-message {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            max-width: 300px;
+        }
+        
+        .debug-message h3 {
+            color: var(--accent);
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .debug-message p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+        
+        .test-button {
             width: 100%;
-            height: 100%;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+            min-height: 48px;
         }
         
-        .base-layer {
-            background-image: 
-                radial-gradient(circle at 30% 60%, rgba(14, 165, 233, 0.1) 0%, transparent 60%),
-                radial-gradient(circle at 70% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
+        .test-button:hover, .test-button:active {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-1px);
         }
         
-        .overlay-layer {
-            opacity: 0.7;
+        .test-button.success {
+            background: linear-gradient(135deg, var(--accent), #059669);
         }
         
-        /* GPS Marker */
-        .gps-marker {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            background: var(--danger);
-            border: 4px solid white;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 
-                0 0 0 4px rgba(239, 68, 68, 0.3),
-                0 0 20px rgba(239, 68, 68, 0.6);
-            animation: gpsMarker 3s infinite;
-            z-index: 10;
-            display: none;
+        .test-button.warning {
+            background: linear-gradient(135deg, var(--warning), #d97706);
         }
         
-        .gps-marker::after {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            border: 2px solid rgba(239, 68, 68, 0.4);
-            border-radius: 50%;
-            animation: gpsRipple 3s infinite;
+        .test-button.danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
         }
         
-        @keyframes gpsMarker {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.1); }
-        }
-        
-        @keyframes gpsRipple {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(2.5); opacity: 0; }
-        }
-        
-        /* Floating Action Buttons */
         .fab-container {
             position: fixed;
-            right: 20px;
+            right: 16px;
             top: 50%;
             transform: translateY(-50%);
             display: flex;
@@ -243,435 +197,96 @@
             justify-content: center;
             font-size: 20px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
         }
         
-        .fab::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: left 0.6s ease;
-        }
-        
-        .fab:hover::before {
-            left: 100%;
-        }
-        
-        .fab:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 
-                0 20px 25px -5px rgba(0, 0, 0, 0.1),
-                0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        
-        .fab:active {
-            transform: translateY(0) scale(0.95);
+        .fab:hover, .fab:active {
+            transform: scale(1.1);
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
         }
         
         .fab.primary {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            box-shadow: 
-                var(--shadow),
-                0 0 20px rgba(14, 165, 233, 0.3);
+            box-shadow: var(--shadow), 0 0 20px rgba(14, 165, 233, 0.3);
         }
         
-        .fab.success {
-            background: linear-gradient(135deg, var(--accent), #059669);
-            box-shadow: 
-                var(--shadow),
-                0 0 20px rgba(16, 185, 129, 0.3);
-        }
-        
-        /* Bottom Panel */
-        .bottom-panel {
-            background: var(--glass);
-            backdrop-filter: var(--blur);
-            -webkit-backdrop-filter: var(--blur);
-            border-top: 1px solid var(--border);
-            padding: 24px 20px;
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            z-index: 40;
-        }
-        
-        .bottom-panel.visible {
-            transform: translateY(0);
-        }
-        
-        .panel-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-        
-        .panel-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .panel-close {
-            width: 32px;
-            height: 32px;
+        .notification {
+            position: fixed;
+            top: calc(max(env(safe-area-inset-top), 12px) + 70px);
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 20px;
+            background: var(--accent);
+            color: white;
             border-radius: 8px;
-            border: none;
-            background: var(--surface);
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .panel-close:hover {
-            background: var(--surface-light);
-            color: var(--text-primary);
-        }
-        
-        /* Transparency Slider */
-        .slider-section {
-            margin-bottom: 24px;
-        }
-        
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        
-        .slider-label {
             font-size: 0.875rem;
             font-weight: 500;
-            color: var(--text-secondary);
-        }
-        
-        .slider-value {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--primary);
-            padding: 4px 12px;
-            background: rgba(14, 165, 233, 0.1);
-            border-radius: 12px;
-            border: 1px solid rgba(14, 165, 233, 0.2);
-        }
-        
-        .slider-container {
-            position: relative;
-        }
-        
-        .slider {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: var(--surface);
-            outline: none;
-            -webkit-appearance: none;
-            position: relative;
-            cursor: pointer;
-        }
-        
-        .slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            cursor: pointer;
-            box-shadow: 
-                0 4px 12px rgba(14, 165, 233, 0.4),
-                0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s ease;
-        }
-        
-        .slider::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
-            box-shadow: 
-                0 6px 20px rgba(14, 165, 233, 0.5),
-                0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .slider::-moz-range-thumb {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            cursor: pointer;
-            border: none;
-            box-shadow: 
-                0 4px 12px rgba(14, 165, 233, 0.4),
-                0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Image Upload Cards */
-        .upload-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        
-        .upload-card {
-            background: var(--surface);
-            border: 2px dashed var(--border);
-            border-radius: 16px;
-            padding: 20px;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            animation: slideIn 0.3s ease;
+            max-width: 90%;
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            display: none;
         }
         
-        .upload-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            opacity: 0;
-            transition: opacity 0.3s ease;
+        @keyframes slideIn {
+            from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
         }
         
-        .upload-card:hover::before {
-            opacity: 0.05;
+        @keyframes slideOut {
+            to { transform: translateX(-50%) translateY(-20px); opacity: 0; }
         }
         
-        .upload-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 
-                0 10px 25px rgba(0, 0, 0, 0.1),
-                0 0 20px rgba(14, 165, 233, 0.1);
-        }
-        
-        .upload-card.loaded {
-            border-color: var(--accent);
-            background: rgba(16, 185, 129, 0.05);
-        }
-        
-        .upload-card.loaded::before {
-            background: linear-gradient(135deg, var(--accent), #059669);
-        }
-        
-        .card-content {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .card-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-            transition: transform 0.3s ease;
-        }
-        
-        .upload-card:hover .card-icon {
-            transform: scale(1.1);
-        }
-        
-        .card-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-        
-        .card-subtitle {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-        
-        /* GPS Section */
-        .gps-section {
-            text-align: center;
-        }
-        
-        .gps-button {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--accent), #059669);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-weight: 600;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 
-                0 4px 12px rgba(16, 185, 129, 0.3),
-                0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .gps-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.6s ease;
-        }
-        
-        .gps-button:hover::before {
-            left: 100%;
-        }
-        
-        .gps-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 
-                0 8px 20px rgba(16, 185, 129, 0.4),
-                0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .gps-button:active {
-            transform: translateY(0);
-        }
-        
-        .gps-button:disabled {
-            background: var(--surface-light);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .coordinates-display {
-            margin-top: 16px;
+        .log {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.8);
+            border-radius: 8px;
             padding: 12px;
-            background: var(--surface);
-            border-radius: 8px;
-            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+            font-family: monospace;
             font-size: 0.75rem;
             color: var(--text-secondary);
-            display: none;
             border: 1px solid var(--border);
-        }
-        
-        /* Welcome Screen */
-        .welcome-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--glass);
-            backdrop-filter: var(--blur);
-            -webkit-backdrop-filter: var(--blur);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 30;
-            transition: all 0.5s ease;
-        }
-        
-        .welcome-content {
-            text-align: center;
-            max-width: 300px;
-            padding: 40px 20px;
-        }
-        
-        .welcome-icon {
-            font-size: 64px;
-            margin-bottom: 24px;
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .welcome-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .welcome-subtitle {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 32px;
-            line-height: 1.5;
-        }
-        
-        .get-started-btn {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 
-                0 4px 12px rgba(14, 165, 233, 0.3),
-                0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .get-started-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 
-                0 8px 20px rgba(14, 165, 233, 0.4),
-                0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Hidden Input */
-        .hidden-input {
             display: none;
+            z-index: 100;
         }
         
-        /* Mobile Optimizations */
+        .log.visible {
+            display: block;
+        }
+        
+        .log-entry {
+            margin-bottom: 4px;
+            word-wrap: break-word;
+        }
+        
+        .log-entry.error {
+            color: var(--danger);
+        }
+        
+        .log-entry.success {
+            color: var(--accent);
+        }
+        
+        .log-entry.warning {
+            color: var(--warning);
+        }
+        
+        /* Mobile optimizations */
         @media (max-width: 768px) {
-            html, body {
-                font-size: 14px;
-                overflow: hidden;
-                position: fixed;
-                width: 100%;
-                height: 100%;
-                margin: 0;
-                padding: 0;
-            }
-            
-            .app-container {
-                height: 100vh;
-                height: 100dvh; /* Dynamic viewport height */
-                overflow: hidden;
-                display: flex;
-                flex-direction: column;
-            }
-            
             .app-header {
-                padding: max(env(safe-area-inset-top), 12px) 16px 12px 16px;
-                min-height: auto;
-                flex-shrink: 0;
-            }
-            
-            .header-content {
-                gap: 12px;
+                padding: max(env(safe-area-inset-top), 10px) 12px 10px 12px;
             }
             
             .app-title h1 {
                 font-size: 1.1rem;
-                line-height: 1.2;
             }
             
             .app-icon {
@@ -680,1528 +295,322 @@
                 font-size: 14px;
             }
             
-            .status-indicator {
-                font-size: 0.7rem;
-            }
-            
-            .status-dot {
-                width: 6px;
-                height: 6px;
-            }
-            
-            .map-viewport {
-                flex: 1;
-                min-height: 0;
-                position: relative;
-                touch-action: pan-x pan-y pinch-zoom;
-                overflow: hidden;
-            }
-            
             .fab-container {
-                position: fixed;
                 right: 12px;
-                top: 50%;
-                transform: translateY(-50%);
-                gap: 8px;
-                z-index: 50;
             }
             
             .fab {
                 width: 48px;
                 height: 48px;
-                font-size: 16px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                border-width: 1px;
+                font-size: 18px;
             }
             
-            .bottom-panel {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                max-height: 75vh;
-                padding: 16px;
-                padding-bottom: max(env(safe-area-inset-bottom), 16px);
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-                overscroll-behavior: contain;
-                border-radius: 16px 16px 0 0;
-            }
-            
-            .panel-header {
-                margin-bottom: 16px;
-                position: sticky;
-                top: -16px;
-                background: var(--glass);
-                backdrop-filter: var(--blur);
-                -webkit-backdrop-filter: var(--blur);
-                z-index: 10;
-                padding: 12px 0;
-                margin-left: -16px;
-                margin-right: -16px;
-                padding-left: 16px;
-                padding-right: 16px;
-                border-radius: 16px 16px 0 0;
-            }
-            
-            .panel-title {
-                font-size: 1.1rem;
-                font-weight: 600;
-            }
-            
-            .panel-close {
-                width: 36px;
-                height: 36px;
-                font-size: 16px;
-            }
-            
-            .upload-grid {
-                display: flex;
-                flex-direction: column;
-                gap: 12px;
-                margin-bottom: 20px;
-            }
-            
-            .upload-card {
-                padding: 16px;
-                border-radius: 12px;
-                min-height: 80px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            .card-icon {
-                font-size: 24px;
-                margin-bottom: 8px;
-            }
-            
-            .card-title {
-                font-size: 0.9rem;
-                font-weight: 600;
-            }
-            
-            .card-subtitle {
-                font-size: 0.75rem;
-                margin-top: 2px;
-            }
-            
-            .slider-section {
-                margin-bottom: 20px;
-            }
-            
-            .slider-header {
-                margin-bottom: 12px;
-                align-items: center;
-            }
-            
-            .slider-label {
-                font-size: 0.85rem;
-                font-weight: 500;
-            }
-            
-            .slider-value {
-                font-size: 0.85rem;
-                padding: 4px 10px;
-                font-weight: 600;
-            }
-            
-            .slider {
-                height: 8px;
-                margin: 8px 0;
-            }
-            
-            .slider::-webkit-slider-thumb {
-                width: 24px;
-                height: 24px;
-            }
-            
-            .slider::-moz-range-thumb {
-                width: 24px;
-                height: 24px;
-            }
-            
-            .gps-section {
-                margin-bottom: 8px;
-            }
-            
-            .gps-button {
-                padding: 16px;
-                font-size: 0.9rem;
-                border-radius: 12px;
-                min-height: 48px;
-            }
-            
-            .coordinates-display {
-                font-size: 0.75rem;
-                margin-top: 12px;
-                padding: 12px;
-                border-radius: 8px;
-                line-height: 1.4;
-            }
-            
-            /* Georeferencing - Mobile Responsive */
-            .georef-section {
-                margin-top: 16px !important;
-                padding: 12px !important;
-                border-radius: 8px !important;
-            }
-            
-            .georef-title {
-                font-size: 0.85rem !important;
-                margin-bottom: 12px !important;
-                font-weight: 600 !important;
-            }
-            
-            .georef-grid {
-                display: grid !important;
-                grid-template-columns: 1fr 1fr !important;
-                gap: 10px !important;
-                margin-bottom: 12px !important;
-            }
-            
-            .georef-grid label {
-                font-size: 0.75rem !important;
-                margin-bottom: 4px !important;
-                font-weight: 500 !important;
-            }
-            
-            .georef-grid input {
-                padding: 8px 10px !important;
-                font-size: 0.8rem !important;
-                border-radius: 6px !important;
-                min-height: 40px !important;
-                box-sizing: border-box !important;
-            }
-            
-            .georef-save-btn {
-                padding: 12px !important;
-                font-size: 0.8rem !important;
-                font-weight: 600 !important;
-                min-height: 44px !important;
-                border-radius: 8px !important;
-            }
-            
-            .georef-help {
-                font-size: 0.7rem !important;
-                margin-top: 8px !important;
-                line-height: 1.3 !important;
-                text-align: center !important;
-            }
-            
-            .gps-help {
-                margin-top: 12px !important;
-                padding: 12px !important;
-                font-size: 0.75rem !important;
-                border-radius: 8px !important;
-                line-height: 1.4 !important;
-            }
-            
-            .gps-help strong {
-                display: inline-block !important;
-                margin-bottom: 4px !important;
-            }
-            
-            .welcome-screen {
-                padding: 16px;
-            }
-            
-            .welcome-content {
-                padding: 24px 16px;
-                max-width: 320px;
-            }
-            
-            .welcome-icon {
-                font-size: 48px;
-                margin-bottom: 16px;
-            }
-            
-            .welcome-title {
-                font-size: 1.25rem;
-                margin-bottom: 12px;
-                line-height: 1.2;
-            }
-            
-            .welcome-subtitle {
-                font-size: 0.85rem;
-                margin-bottom: 24px;
-                line-height: 1.4;
-            }
-            
-            .get-started-btn {
-                padding: 14px 24px;
-                font-size: 0.9rem;
-                min-height: 48px;
-            }
-            
-            .gps-marker {
-                width: 20px;
-                height: 20px;
-                border: 3px solid white;
-            }
-            
-            .gps-marker::after {
-                top: -2px;
-                left: -2px;
-                right: -2px;
-                bottom: -2px;
-                border: 2px solid rgba(239, 68, 68, 0.4);
-            }
-            
-            /* Loading spinner */
-            .loading-spinner {
-                width: 16px;
-                height: 16px;
-            }
-        }
-
-        /* Small mobile devices (iPhone SE, etc.) */
-        @media (max-width: 400px) {
-            .app-header {
-                padding: max(env(safe-area-inset-top), 10px) 12px 10px 12px;
-            }
-            
-            .header-content {
-                gap: 8px;
-            }
-            
-            .app-title h1 {
-                font-size: 1rem;
-            }
-            
-            .fab-container {
-                right: 8px;
-            }
-            
-            .fab {
-                width: 44px;
-                height: 44px;
-                font-size: 14px;
-            }
-            
-            .bottom-panel {
-                padding: 12px;
-                padding-bottom: max(env(safe-area-inset-bottom), 12px);
-                max-height: 70vh;
-            }
-            
-            .panel-header {
-                margin-left: -12px;
-                margin-right: -12px;
-                padding-left: 12px;
-                padding-right: 12px;
-            }
-            
-            .welcome-content {
+            .debug-message {
                 max-width: 280px;
-                padding: 20px 12px;
+                margin: 0 16px;
             }
             
-            .welcome-icon {
-                font-size: 40px;
-            }
-            
-            .welcome-title {
-                font-size: 1.1rem;
-            }
-            
-            .welcome-subtitle {
+            .test-button {
                 font-size: 0.8rem;
-            }
-            
-            .georef-grid {
-                gap: 8px !important;
-            }
-            
-            .georef-grid input {
-                padding: 6px 8px !important;
-                font-size: 0.75rem !important;
-                min-height: 36px !important;
-            }
-            
-            .georef-save-btn {
-                padding: 10px !important;
-                font-size: 0.75rem !important;
-                min-height: 40px !important;
-            }
-        }
-
-        /* Landscape mobile orientation */
-        @media (max-width: 768px) and (orientation: landscape) {
-            .app-header {
-                padding: max(env(safe-area-inset-top), 6px) 16px 6px 16px;
-            }
-            
-            .fab-container {
-                top: 35%;
-                right: max(env(safe-area-inset-right), 8px);
-            }
-            
-            .bottom-panel {
-                max-height: 65vh;
-                padding: 12px;
-                padding-bottom: max(env(safe-area-inset-bottom), 12px);
-            }
-            
-            .welcome-content {
-                padding: 16px;
-                max-width: 400px;
-            }
-            
-            .welcome-icon {
-                font-size: 36px;
-                margin-bottom: 12px;
-            }
-            
-            .welcome-title {
-                font-size: 1.1rem;
-                margin-bottom: 8px;
-            }
-            
-            .welcome-subtitle {
-                font-size: 0.8rem;
-                margin-bottom: 16px;
-            }
-        }
-
-        /* iOS Safari specific fixes */
-        @supports (-webkit-appearance: none) {
-            .app-container {
-                height: -webkit-fill-available;
-            }
-        }
-
-        /* Prevent zoom on input focus */
-        @media (max-width: 768px) {
-            input[type="number"],
-            input[type="text"], 
-            button, 
-            select, 
-            textarea {
-                font-size: 16px !important;
-                -webkit-appearance: none;
-                appearance: none;
-            }
-            
-            input[type="number"]:focus {
-                outline: 2px solid var(--primary);
-                outline-offset: 1px;
-            }
-        }
-
-        /* Loading Animation */
-        .loading-spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top: 2px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @supports (padding: max(0px)) {
-            .app-header {
-                padding-top: max(env(safe-area-inset-top), 12px);
-                padding-left: max(env(safe-area-inset-left), 16px);
-                padding-right: max(env(safe-area-inset-right), 16px);
-            }
-            
-            .fab-container {
-                right: max(env(safe-area-inset-right), 12px);
-            }
-            
-            .bottom-panel {
-                padding-bottom: max(env(safe-area-inset-bottom), 16px);
-                padding-left: max(env(safe-area-inset-left), 16px);
-                padding-right: max(env(safe-area-inset-right), 16px);
-            }
-        }
-        
-        /* Georeferencing Section Styles */
-        .georef-section {
-            margin-top: 16px;
-            padding: 12px;
-            background: rgba(6, 182, 212, 0.05);
-            border: 1px solid rgba(6, 182, 212, 0.2);
-            border-radius: 8px;
-        }
-        
-        .georef-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--secondary);
-            margin-bottom: 12px;
-        }
-        
-        .georef-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        
-        .georef-grid > div {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .georef-grid label {
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-        
-        .georef-grid input {
-            width: 100%;
-            padding: 6px 8px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text-primary);
-            font-size: 0.75rem;
-            min-height: 32px;
-            box-sizing: border-box;
-        }
-        
-        .georef-grid input:focus {
-            outline: 2px solid var(--secondary);
-            outline-offset: 1px;
-            border-color: var(--secondary);
-        }
-        
-        .georef-save-btn {
-            width: 100%;
-            padding: 8px;
-            background: var(--secondary);
-            border: none;
-            border-radius: 6px;
-            color: white;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            min-height: 36px;
-            transition: all 0.2s ease;
-        }
-        
-        .georef-save-btn:hover {
-            background: #0891b2;
-            transform: translateY(-1px);
-        }
-        
-        .georef-save-btn:active {
-            transform: translateY(0);
-        }
-        
-        .georef-help {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            margin-top: 8px;
-            text-align: center;
-            line-height: 1.3;
-        }
-        .loading-spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top: 2px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        /* Fix for notched devices */
-        @supports (padding: max(0px)) {
-            .app-header {
-                padding-top: max(env(safe-area-inset-top), 12px);
-                padding-left: max(env(safe-area-inset-left), 16px);
-                padding-right: max(env(safe-area-inset-right), 16px);
-            }
-            
-            .fab-container {
-                right: max(env(safe-area-inset-right), 12px);
-            }
-            
-            .bottom-panel {
-                padding-bottom: max(env(safe-area-inset-bottom), 16px);
-                padding-left: max(env(safe-area-inset-left), 16px);
-                padding-right: max(env(safe-area-inset-right), 16px);
+                min-height: 44px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="app-background"></div>
+    <div id="notification" class="notification"></div>
+    <div id="log" class="log">
+        <div class="log-entry success">🐛 Mode Debug - Relief Marin</div>
+        <div class="log-entry">Initialisation...</div>
+    </div>
     
     <div class="app-container">
-        <!-- Header -->
         <header class="app-header">
             <div class="header-content">
                 <div class="app-title">
                     <div class="app-icon">🌊</div>
                     <h1>Relief Marin</h1>
                 </div>
-                <div class="status-indicator">
-                    <div class="status-dot" id="statusDot"></div>
-                    <span id="statusText">Prêt</span>
-                </div>
+                <div class="debug-info">DEBUG MODE</div>
             </div>
         </header>
         
-        <!-- Map Viewport -->
         <div class="map-viewport">
-            <div class="map-layer base-layer" id="baseLayer"></div>
-            <div class="map-layer overlay-layer" id="overlayLayer"></div>
-            <div class="gps-marker" id="gpsMarker"></div>
-            
-            <!-- Welcome Screen -->
-            <div class="welcome-screen" id="welcomeScreen">
-                <div class="welcome-content">
-                    <div class="welcome-icon">🗺️</div>
-                    <h2 class="welcome-title">Relief Marin</h2>
-                    <p class="welcome-subtitle">
-                        Visualisez vos cartes sous-marines avec superposition intelligente et géolocalisation précise
-                    </p>
-                    <button class="get-started-btn" id="getStartedBtn">
-                        Commencer
-                    </button>
-                    <div style="margin-top: 16px; font-size: 0.7rem; color: var(--text-secondary); text-align: center;">
-                        📱 Optimisé pour mobile<br>
-                        🔄 Pinch pour zoomer • Double-tap pour centrer
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Floating Action Buttons -->
-        <div class="fab-container">
-            <button class="fab" id="uploadFab" title="Charger les images">
-                📁
-            </button>
-            <button class="fab primary" id="controlsFab" title="Contrôles">
-                ⚙️
-            </button>
-            <button class="fab success" id="gpsFab" title="Ma position">
-                📍
-            </button>
-        </div>
-        
-        <!-- Bottom Panel -->
-        <div class="bottom-panel" id="bottomPanel">
-            <div class="panel-header">
-                <h3 class="panel-title">Contrôles</h3>
-                <button class="panel-close" id="panelClose">✕</button>
-            </div>
-            
-            <!-- Upload Section -->
-            <div class="upload-grid">
-                <div class="upload-card" id="baseCard">
-                    <div class="card-content">
-                        <div class="card-icon">🗺️</div>
-                        <div class="card-title">Carte de base</div>
-                        <div class="card-subtitle">Cliquez pour charger</div>
-                    </div>
-                </div>
-                <div class="upload-card" id="overlayCard">
-                    <div class="card-content">
-                        <div class="card-icon">⛰️</div>
-                        <div class="card-title">Relief</div>
-                        <div class="card-subtitle">Données bathymétriques</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Transparency Slider -->
-            <div class="slider-section">
-                <div class="slider-header">
-                    <span class="slider-label">Transparence de l'overlay</span>
-                    <span class="slider-value" id="sliderValue">70%</span>
-                </div>
-                <div class="slider-container">
-                    <input type="range" class="slider" id="transparencySlider" 
-                           min="0" max="100" value="70" disabled>
-                </div>
-            </div>
-            
-            <!-- GPS Section -->
-            <div class="gps-section">
-                <button class="gps-button" id="gpsButton">
-                    📍 Localiser ma position
+            <div class="debug-message">
+                <h3>🔧 Test des fonctionnalités</h3>
+                <p>Cliquez sur les boutons pour tester chaque fonction</p>
+                
+                <button id="testTouch" class="test-button">
+                    📱 Test Touch Events
                 </button>
-                <div class="coordinates-display" id="coordinatesDisplay">
-                    Position : Non disponible
-                </div>
                 
-                <!-- Georeferencing Section -->
-                <div class="georef-section" style="margin-top: 16px; padding: 12px; background: rgba(6, 182, 212, 0.05); border: 1px solid rgba(6, 182, 212, 0.2); border-radius: 8px;">
-                    <div style="font-size: 0.8rem; font-weight: 600; color: var(--secondary); margin-bottom: 8px;">
-                        🌍 Géoréférencement (optionnel)
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.7rem;">
-                        <div>
-                            <label style="color: var(--text-secondary); margin-bottom: 2px; display: block;">Lat Nord:</label>
-                            <input type="number" step="any" placeholder="43.3000" id="latNorth" style="width: 100%; padding: 4px 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); font-size: 0.7rem;">
-                        </div>
-                        <div>
-                            <label style="color: var(--text-secondary); margin-bottom: 2px; display: block;">Lat Sud:</label>
-                            <input type="number" step="any" placeholder="43.2500" id="latSouth" style="width: 100%; padding: 4px 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); font-size: 0.7rem;">
-                        </div>
-                        <div>
-                            <label style="color: var(--text-secondary); margin-bottom: 2px; display: block;">Lon Ouest:</label>
-                            <input type="number" step="any" placeholder="5.3500" id="lonWest" style="width: 100%; padding: 4px 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); font-size: 0.7rem;">
-                        </div>
-                        <div>
-                            <label style="color: var(--text-secondary); margin-bottom: 2px; display: block;">Lon Est:</label>
-                            <input type="number" step="any" placeholder="5.4000" id="lonEast" style="width: 100%; padding: 4px 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); font-size: 0.7rem;">
-                        </div>
-                    </div>
-                    <button id="saveGeoref" style="width: 100%; margin-top: 8px; padding: 6px; background: var(--secondary); border: none; border-radius: 4px; color: white; font-size: 0.7rem; font-weight: 600; cursor: pointer;">
-                        💾 Enregistrer coordonnées
-                    </button>
-                    <div style="font-size: 0.65rem; color: var(--text-secondary); margin-top: 6px; text-align: center;">
-                        Définissez les limites géographiques de vos images pour un GPS précis
-                    </div>
-                </div>
+                <button id="testNotification" class="test-button">
+                    🔔 Test Notifications
+                </button>
                 
-                <!-- GPS Help -->
-                <div class="gps-help" style="margin-top: 12px; padding: 12px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px; font-size: 0.75rem; color: var(--text-secondary); display: none;" id="gpsHelp">
-                    <strong style="color: var(--warning);">💡 GPS ne fonctionne pas ?</strong><br>
-                    • <strong>Fichier local :</strong> Utilisez un serveur web ou GitHub Pages<br>
-                    • <strong>Permissions :</strong> Autorisez la géolocalisation<br>
-                    • <strong>HTTPS requis :</strong> Le GPS ne marche qu'en HTTPS
-                </div>
+                <button id="testGPS" class="test-button">
+                    📍 Test GPS
+                </button>
+                
+                <button id="testLog" class="test-button">
+                    📋 Afficher/Masquer Log
+                </button>
+                
+                <button id="testAll" class="test-button primary">
+                    ✅ Test Complet
+                </button>
             </div>
+        </div>
+        
+        <div class="fab-container">
+            <button class="fab primary" id="fabTest" title="Test FAB">
+                ⚡
+            </button>
         </div>
     </div>
-    
-    <!-- Hidden File Inputs -->
-    <input type="file" class="hidden-input" id="baseInput" accept="image/*">
-    <input type="file" class="hidden-input" id="overlayInput" accept="image/*">
 
     <script>
-        class ReliefMarinApp {
+        // Debug logging system
+        class DebugLogger {
             constructor() {
-                this.baseImage = null;
-                this.overlayImage = null;
-                this.currentPosition = null;
-                this.isControlsOpen = false;
-                this.georeferencing = {
-                    latNorth: null,
-                    latSouth: null, 
-                    lonWest: null,
-                    lonEast: null
-                };
-                
-                // DOM Elements
-                this.elements = {
-                    welcomeScreen: document.getElementById('welcomeScreen'),
-                    bottomPanel: document.getElementById('bottomPanel'),
-                    baseLayer: document.getElementById('baseLayer'),
-                    overlayLayer: document.getElementById('overlayLayer'),
-                    gpsMarker: document.getElementById('gpsMarker'),
-                    statusText: document.getElementById('statusText'),
-                    statusDot: document.getElementById('statusDot'),
-                    transparencySlider: document.getElementById('transparencySlider'),
-                    sliderValue: document.getElementById('sliderValue'),
-                    coordinatesDisplay: document.getElementById('coordinatesDisplay'),
-                    baseCard: document.getElementById('baseCard'),
-                    overlayCard: document.getElementById('overlayCard'),
-                    baseInput: document.getElementById('baseInput'),
-                    overlayInput: document.getElementById('overlayInput'),
-                    gpsButton: document.getElementById('gpsButton'),
-                    gpsHelp: document.getElementById('gpsHelp'),
-                    latNorth: document.getElementById('latNorth'),
-                    latSouth: document.getElementById('latSouth'),
-                    lonWest: document.getElementById('lonWest'),
-                    lonEast: document.getElementById('lonEast'),
-                    saveGeoref: document.getElementById('saveGeoref'),
-                    uploadFab: document.getElementById('uploadFab'),
-                    controlsFab: document.getElementById('controlsFab'),
-                    gpsFab: document.getElementById('gpsFab'),
-                    getStartedBtn: document.getElementById('getStartedBtn'),
-                    panelClose: document.getElementById('panelClose')
-                };
-                
-                this.initializeApp();
-                this.loadStoredImages();
-                this.checkGPSAvailability();
+                this.logElement = document.getElementById('log');
+                this.isVisible = false;
+                this.log('Logger initialisé', 'success');
             }
             
-            checkGPSAvailability() {
-                // Check GPS support and context
-                if (!navigator.geolocation) {
-                    this.elements.gpsButton.innerHTML = '❌ GPS non supporté';
-                    this.elements.gpsButton.disabled = true;
-                    this.elements.gpsFab.innerHTML = '❌';
-                    this.elements.gpsHelp.style.display = 'block';
-                    return;
+            log(message, type = 'info') {
+                const timestamp = new Date().toLocaleTimeString();
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                entry.textContent = `${timestamp}: ${message}`;
+                
+                this.logElement.appendChild(entry);
+                this.logElement.scrollTop = this.logElement.scrollHeight;
+                
+                // Keep only last 50 entries
+                const entries = this.logElement.querySelectorAll('.log-entry');
+                if (entries.length > 50) {
+                    entries[0].remove();
                 }
                 
-                // Check if running on file:// protocol
-                if (window.location.protocol === 'file:') {
-                    this.elements.gpsHelp.style.display = 'block';
-                    this.showNotification('GPS nécessite HTTPS - Simulation disponible', 'warning');
-                }
-                
-                // Check if we're in a secure context
-                if (!window.isSecureContext) {
-                    this.elements.gpsHelp.style.display = 'block';
-                }
-            }
+                console.log(`[${type.toUpperCase()}] ${message}`);
             }
             
-            initializeApp() {
-                // Event listeners
-                this.elements.getStartedBtn.addEventListener('click', () => this.hideWelcome());
-                this.elements.uploadFab.addEventListener('click', () => this.toggleControls());
-                this.elements.controlsFab.addEventListener('click', () => this.toggleControls());
-                this.elements.panelClose.addEventListener('click', () => this.hideControls());
-                this.elements.gpsFab.addEventListener('click', () => this.getCurrentPosition());
-                this.elements.gpsButton.addEventListener('click', () => this.getCurrentPosition());
-                
-                // Upload cards
-                this.elements.baseCard.addEventListener('click', () => this.elements.baseInput.click());
-                this.elements.overlayCard.addEventListener('click', () => this.elements.overlayInput.click());
-                
-                // File inputs
-                this.elements.baseInput.addEventListener('change', (e) => this.handleImageUpload(e, 'base'));
-                this.elements.overlayInput.addEventListener('change', (e) => this.handleImageUpload(e, 'overlay'));
-                
-                // Transparency slider
-                this.elements.transparencySlider.addEventListener('input', (e) => this.updateTransparency(e.target.value));
-                
-                // Georeferencing
-                this.elements.saveGeoref.addEventListener('click', () => this.saveGeoreferencing());
-                
-                // Georeferencing
-                this.elements.saveGeoref.addEventListener('click', () => this.saveGeoreferencing());
-                
-                // Touch controls
-                this.initializeTouchControls();
-                
-                // PWA Service Worker
-                this.registerServiceWorker();
-                
-                // Handle orientation changes
-                this.handleOrientationChange();
-            }
-            
-            handleOrientationChange() {
-                window.addEventListener('orientationchange', () => {
-                    // Small delay to let the browser update viewport
-                    setTimeout(() => {
-                        // Recalculate GPS marker position if visible
-                        if (this.elements.gpsMarker.style.display !== 'none' && this.currentPosition) {
-                            this.showGPSMarker();
-                        }
-                        
-                        // Adjust panel height on orientation change
-                        if (this.isControlsOpen && window.innerWidth <= 768) {
-                            this.elements.bottomPanel.style.maxHeight = window.orientation === 0 ? '75vh' : '65vh';
-                        }
-                    }, 200);
-                });
-                
-                // Handle resize events for responsive adjustments
-                window.addEventListener('resize', () => {
-                    if (this.currentPosition) {
-                        this.showGPSMarker();
-                    }
-                });
-            }
-            
-            hideWelcome() {
-                this.elements.welcomeScreen.style.opacity = '0';
-                setTimeout(() => {
-                    this.elements.welcomeScreen.style.display = 'none';
-                }, 500);
-                
-                // Show controls after a moment
-                setTimeout(() => this.toggleControls(), 1000);
-            }
-            
-            toggleControls() {
-                this.isControlsOpen = !this.isControlsOpen;
-                if (this.isControlsOpen) {
-                    this.elements.bottomPanel.classList.add('visible');
-                    
-                    // On mobile, ensure panel is scrolled to top when opened
-                    if (window.innerWidth <= 768) {
-                        setTimeout(() => {
-                            this.elements.bottomPanel.scrollTop = 0;
-                        }, 100);
-                    }
-                } else {
-                    this.elements.bottomPanel.classList.remove('visible');
-                }
-            }
-            
-            hideControls() {
-                this.isControlsOpen = false;
-                this.elements.bottomPanel.classList.remove('visible');
-                
-                // On mobile, also scroll to top when closing
-                if (window.innerWidth <= 768) {
-                    this.elements.bottomPanel.scrollTop = 0;
-                }
-            }
-            
-            async handleImageUpload(event, type) {
-                const file = event.target.files[0];
-                if (!file) return;
-                
-                const card = type === 'base' ? this.elements.baseCard : this.elements.overlayCard;
-                const layer = type === 'base' ? this.elements.baseLayer : this.elements.overlayLayer;
-                
-                // Show loading state
-                const originalContent = card.innerHTML;
-                card.innerHTML = `
-                    <div class="card-content">
-                        <div class="loading-spinner"></div>
-                        <div class="card-title">Chargement...</div>
-                    </div>
-                `;
-                
-                try {
-                    const imageUrl = await this.fileToDataUrl(file);
-                    
-                    if (type === 'base') {
-                        this.baseImage = imageUrl;
-                        this.storeData('baseImage', imageUrl);
-                    } else {
-                        this.overlayImage = imageUrl;
-                        this.storeData('overlayImage', imageUrl);
-                        this.elements.transparencySlider.disabled = false;
-                    }
-                    
-                    layer.style.backgroundImage = `url(${imageUrl})`;
-                    card.classList.add('loaded');
-                    
-                    // Success state
-                    card.innerHTML = `
-                        <div class="card-content">
-                            <div class="card-icon">✅</div>
-                            <div class="card-title">${type === 'base' ? 'Carte chargée' : 'Relief chargé'}</div>
-                            <div class="card-subtitle">Cliquez pour changer</div>
-                        </div>
-                    `;
-                    
-                    this.updateStatus();
-                    
-                } catch (error) {
-                    // Error state
-                    card.innerHTML = `
-                        <div class="card-content">
-                            <div class="card-icon">❌</div>
-                            <div class="card-title">Erreur</div>
-                            <div class="card-subtitle">Réessayez</div>
-                        </div>
-                    `;
-                    setTimeout(() => {
-                        card.innerHTML = originalContent;
-                        card.classList.remove('loaded');
-                    }, 2000);
-                }
-            }
-            
-            fileToDataUrl(file) {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => resolve(e.target.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            }
-            
-            updateTransparency(value) {
-                const opacity = value / 100;
-                this.elements.overlayLayer.style.opacity = opacity;
-                this.elements.sliderValue.textContent = `${value}%`;
-            }
-            
-            updateStatus() {
-                if (this.baseImage && this.overlayImage) {
-                    this.elements.statusText.textContent = 'Images chargées';
-                    this.elements.statusDot.style.background = 'var(--accent)';
-                } else if (this.baseImage || this.overlayImage) {
-                    this.elements.statusText.textContent = 'Image partielle';
-                    this.elements.statusDot.style.background = 'var(--warning)';
-                } else {
-                    this.elements.statusText.textContent = 'Prêt';
-                    this.elements.statusDot.style.background = 'var(--accent)';
-                }
-            }
-            
-            getCurrentPosition() {
-                if (!navigator.geolocation) {
-                    this.showNotification('Géolocalisation non supportée', 'error');
-                    return;
-                }
-                
-                const button = this.elements.gpsButton;
-                const fab = this.elements.gpsFab;
-                
-                // Loading state
-                button.innerHTML = '<div class="loading-spinner"></div> Localisation...';
-                button.disabled = true;
-                fab.innerHTML = '📡';
-                
-                const options = {
-                    enableHighAccuracy: true,
-                    timeout: 15000,
-                    maximumAge: 300000
-                };
-                
-                navigator.geolocation.getCurrentPosition(
-                    (position) => this.onLocationSuccess(position),
-                    (error) => this.onLocationError(error),
-                    options
-                );
-            }
-            
-            onLocationSuccess(position) {
-                this.currentPosition = {
-                    lat: position.coords.latitude,
-                    lon: position.coords.longitude,
-                    accuracy: position.coords.accuracy,
-                    timestamp: Date.now()
-                };
-                
-                this.showGPSMarker();
-                this.updateCoordinatesDisplay();
-                
-                // Reset buttons
-                this.elements.gpsButton.innerHTML = '✅ Position obtenue';
-                this.elements.gpsButton.disabled = false;
-                this.elements.gpsFab.innerHTML = '📍';
-                
-                // Auto-hide success message
-                setTimeout(() => {
-                    this.elements.gpsButton.innerHTML = '📍 Localiser ma position';
-                }, 3000);
-                
-                this.showNotification('Position GPS obtenue', 'success');
-            }
-            
-            onLocationError(error) {
-                console.error('GPS Error:', error);
-                
-                // Reset buttons
-                this.elements.gpsButton.innerHTML = '❌ Erreur GPS';
-                this.elements.gpsButton.disabled = false;
-                this.elements.gpsFab.innerHTML = '📍';
-                
-                setTimeout(() => {
-                    this.elements.gpsButton.innerHTML = '📍 Localiser ma position';
-                }, 3000);
-                
-                let message = 'Erreur de géolocalisation';
-                let solution = '';
-                
-                // Check if running on file:// protocol
-                if (window.location.protocol === 'file:') {
-                    message = 'GPS non supporté en local';
-                    solution = 'Utilisez un serveur HTTPS ou testez la simulation';
-                    this.showSimulationOption();
-                } else {
-                    switch (error.code) {
-                        case error.PERMISSION_DENIED:
-                            message = 'Permission GPS refusée';
-                            solution = 'Autorisez la géolocalisation dans les paramètres du navigateur';
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            message = 'Position GPS indisponible';
-                            solution = 'Vérifiez que le GPS est activé sur votre appareil';
-                            break;
-                        case error.TIMEOUT:
-                            message = 'Délai GPS dépassé';
-                            solution = 'Réessayez dans un endroit avec meilleure réception';
-                            break;
-                    }
-                }
-                
-                this.showNotification(`${message}. ${solution}`, 'error');
-            }
-            
-            showSimulationOption() {
-                // Add simulation button temporarily
-                const simulateBtn = document.createElement('button');
-                simulateBtn.innerHTML = '🎯 Simuler position (test)';
-                simulateBtn.style.cssText = `
-                    width: 100%;
-                    padding: 12px;
-                    background: linear-gradient(135deg, var(--warning), #d97706);
-                    border: none;
-                    border-radius: 8px;
-                    color: white;
-                    font-weight: 600;
-                    font-size: 0.875rem;
-                    cursor: pointer;
-                    margin-top: 8px;
-                    transition: all 0.3s ease;
-                `;
-                
-                simulateBtn.addEventListener('click', () => {
-                    this.simulateGPSPosition();
-                    simulateBtn.remove();
-                });
-                
-                this.elements.gpsButton.parentNode.insertBefore(simulateBtn, this.elements.coordinatesDisplay);
-            }
-            
-            checkGPSAvailability() {
-                // Check GPS support and context
-                if (!navigator.geolocation) {
-                    this.elements.gpsButton.innerHTML = '❌ GPS non supporté';
-                    this.elements.gpsButton.disabled = true;
-                    this.elements.gpsFab.innerHTML = '❌';
-                    this.elements.gpsHelp.style.display = 'block';
-                    return;
-                }
-                
-                // Check if running on file:// protocol
-                if (window.location.protocol === 'file:') {
-                    this.elements.gpsHelp.style.display = 'block';
-                    this.showNotification('GPS nécessite HTTPS - Simulation disponible', 'warning');
-                }
-                
-                // Check if we're in a secure context
-                if (!window.isSecureContext) {
-                    this.elements.gpsHelp.style.display = 'block';
-                }
-            }
-            
-            simulateGPSPosition() {
-                // Use georeferencing bounds if available, otherwise default coords
-                let lat, lon;
-                
-                if (this.georeferencing.latNorth && this.georeferencing.latSouth) {
-                    // Random position within georeferenced bounds
-                    lat = this.georeferencing.latSouth + 
-                          Math.random() * (this.georeferencing.latNorth - this.georeferencing.latSouth);
-                    lon = this.georeferencing.lonWest + 
-                          Math.random() * (this.georeferencing.lonEast - this.georeferencing.lonWest);
-                } else {
-                    // Default simulation (Mediterranean Sea)
-                    lat = 43.2804 + (Math.random() - 0.5) * 0.01;
-                    lon = 5.3733 + (Math.random() - 0.5) * 0.01;
-                }
-                
-                const simulatedPosition = {
-                    coords: {
-                        latitude: lat,
-                        longitude: lon,
-                        accuracy: 10 + Math.random() * 20
-                    }
-                };
-                
-                this.onLocationSuccess(simulatedPosition);
-                this.showNotification('Position simulée pour test', 'warning');
-            }
-            
-            saveGeoreferencing() {
-                const latNorth = parseFloat(this.elements.latNorth.value);
-                const latSouth = parseFloat(this.elements.latSouth.value);
-                const lonWest = parseFloat(this.elements.lonWest.value);
-                const lonEast = parseFloat(this.elements.lonEast.value);
-                
-                // Validation
-                if (isNaN(latNorth) || isNaN(latSouth) || isNaN(lonWest) || isNaN(lonEast)) {
-                    this.showNotification('Veuillez remplir toutes les coordonnées', 'error');
-                    return;
-                }
-                
-                if (latNorth <= latSouth) {
-                    this.showNotification('Latitude Nord doit être > Latitude Sud', 'error');
-                    return;
-                }
-                
-                if (lonEast <= lonWest) {
-                    this.showNotification('Longitude Est doit être > Longitude Ouest', 'error');
-                    return;
-                }
-                
-                this.georeferencing = { latNorth, latSouth, lonWest, lonEast };
-                
-                // Save to storage
-                try {
-                    const georefData = JSON.stringify(this.georeferencing);
-                    window.georeferencing = georefData;
-                    if (typeof localStorage !== 'undefined') {
-                        localStorage.setItem('georeferencing', georefData);
-                    }
-                    this.showNotification('Géoréférencement sauvegardé ✅', 'success');
-                } catch (error) {
-                    console.log('Could not save georeferencing:', error);
-                    this.showNotification('Sauvegarde en mémoire uniquement', 'warning');
-                }
-            }
-            
-            calculateGPSPixelPosition(lat, lon) {
-                if (!this.georeferencing.latNorth) {
-                    // No georeferencing defined, use center
-                    const viewport = document.querySelector('.map-viewport');
-                    const rect = viewport.getBoundingClientRect();
-                    return {
-                        x: rect.width / 2,
-                        y: rect.height / 2,
-                        inBounds: false
-                    };
-                }
-                
-                // Check if position is within image bounds
-                const { latNorth, latSouth, lonWest, lonEast } = this.georeferencing;
-                const inBounds = lat >= latSouth && lat <= latNorth && lon >= lonWest && lon <= lonEast;
-                
-                if (!inBounds) {
-                    return { x: -1, y: -1, inBounds: false };
-                }
-                
-                // Calculate pixel position using linear transformation
-                const viewport = document.querySelector('.map-viewport');
-                const rect = viewport.getBoundingClientRect();
-                
-                // Normalize coordinates (0-1)
-                const normalizedX = (lon - lonWest) / (lonEast - lonWest);
-                const normalizedY = (latNorth - lat) / (latNorth - latSouth); // Inverted Y
-                
-                // Convert to pixel coordinates
-                const x = normalizedX * rect.width;
-                const y = normalizedY * rect.height;
-                
-                return { x, y, inBounds: true };
-            }
-            
-            showGPSMarker() {
-                if (!this.currentPosition) return;
-                
-                const { lat, lon } = this.currentPosition;
-                const { x, y, inBounds } = this.calculateGPSPixelPosition(lat, lon);
-                
-                if (!inBounds) {
-                    this.elements.gpsMarker.style.display = 'none';
-                    this.showNotification('Position GPS hors de la carte', 'warning');
-                    return;
-                }
-                
-                this.elements.gpsMarker.style.left = `${x}px`;
-                this.elements.gpsMarker.style.top = `${y}px`;
-                this.elements.gpsMarker.style.display = 'block';
-                
-                const accuracy = this.georeferencing.latNorth ? 'Position GPS précise' : 'Position GPS simulée (centre)';
-                this.showNotification(accuracy, 'success');
-            }
-            
-            updateCoordinatesDisplay() {
-                if (this.currentPosition) {
-                    this.elements.coordinatesDisplay.style.display = 'block';
-                    this.elements.coordinatesDisplay.innerHTML = `
-                        <strong>Latitude:</strong> ${this.currentPosition.lat.toFixed(6)}<br>
-                        <strong>Longitude:</strong> ${this.currentPosition.lon.toFixed(6)}<br>
-                        <strong>Précision:</strong> ±${Math.round(this.currentPosition.accuracy)}m
-                    `;
-                }
-            }
-            
-            showNotification(message, type = 'info') {
-                // Simple notification system
-                const notification = document.createElement('div');
-                const isMobile = window.innerWidth <= 768;
-                const topPosition = isMobile ? 'calc(max(env(safe-area-inset-top), 10px) + 60px)' : '80px';
-                
-                notification.style.cssText = `
-                    position: fixed;
-                    top: ${topPosition};
-                    left: 50%;
-                    transform: translateX(-50%);
-                    padding: ${isMobile ? '10px 16px' : '12px 20px'};
-                    background: ${type === 'error' ? 'var(--danger)' : type === 'success' ? 'var(--accent)' : type === 'warning' ? 'var(--warning)' : 'var(--primary)'};
-                    color: white;
-                    border-radius: 8px;
-                    font-size: ${isMobile ? '0.8rem' : '0.875rem'};
-                    font-weight: 500;
-                    z-index: 1000;
-                    box-shadow: var(--shadow);
-                    animation: slideIn 0.3s ease;
-                    max-width: ${isMobile ? '90%' : '400px'};
-                    text-align: center;
-                    backdrop-filter: blur(8px);
-                    -webkit-backdrop-filter: blur(8px);
-                `;
-                notification.textContent = message;
-                
-                document.body.appendChild(notification);
-                
-                setTimeout(() => {
-                    notification.style.animation = 'slideOut 0.3s ease forwards';
-                    setTimeout(() => {
-                        if (document.body.contains(notification)) {
-                            document.body.removeChild(notification);
-                        }
-                    }, 300);
-                }, 3000);
-            }
-            
-            initializeTouchControls() {
-                let scale = 1;
-                let translateX = 0;
-                let translateY = 0;
-                let initialDistance = 0;
-                let lastTouchX = 0;
-                let lastTouchY = 0;
-                let isMultiTouch = false;
-                let initialScale = 1;
-                let initialTranslateX = 0;
-                let initialTranslateY = 0;
-                
-                const viewport = document.querySelector('.map-viewport');
-                
-                const updateTransform = () => {
-                    const transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-                    this.elements.baseLayer.style.transform = transform;
-                    this.elements.overlayLayer.style.transform = transform;
-                    
-                    // Update GPS marker position accordingly
-                    if (this.elements.gpsMarker.style.display !== 'none' && this.currentPosition) {
-                        const { x: gpsX, y: gpsY } = this.calculateGPSPixelPosition(
-                            this.currentPosition.lat, 
-                            this.currentPosition.lon
-                        );
-                        
-                        if (gpsX >= 0 && gpsY >= 0) {
-                            const finalX = gpsX * scale + translateX;
-                            const finalY = gpsY * scale + translateY;
-                            this.elements.gpsMarker.style.left = `${finalX}px`;
-                            this.elements.gpsMarker.style.top = `${finalY}px`;
-                        }
-                    }
-                };
-                
-                const resetTransform = () => {
-                    scale = 1;
-                    translateX = 0;
-                    translateY = 0;
-                    updateTransform();
-                };
-                
-                viewport.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    
-                    if (e.touches.length === 2) {
-                        isMultiTouch = true;
-                        const touch1 = e.touches[0];
-                        const touch2 = e.touches[1];
-                        initialDistance = Math.hypot(
-                            touch2.clientX - touch1.clientX,
-                            touch2.clientY - touch1.clientY
-                        );
-                        initialScale = scale;
-                    } else if (e.touches.length === 1) {
-                        isMultiTouch = false;
-                        lastTouchX = e.touches[0].clientX;
-                        lastTouchY = e.touches[0].clientY;
-                        initialTranslateX = translateX;
-                        initialTranslateY = translateY;
-                    }
-                }, { passive: false });
-                
-                viewport.addEventListener('touchmove', (e) => {
-                    e.preventDefault();
-                    
-                    if (e.touches.length === 2 && isMultiTouch && initialDistance > 0) {
-                        // Pinch to zoom
-                        const touch1 = e.touches[0];
-                        const touch2 = e.touches[1];
-                        const currentDistance = Math.hypot(
-                            touch2.clientX - touch1.clientX,
-                            touch2.clientY - touch1.clientY
-                        );
-                        
-                        const scaleChange = currentDistance / initialDistance;
-                        scale = Math.min(Math.max(0.25, initialScale * scaleChange), 5);
-                        
-                        updateTransform();
-                    } else if (e.touches.length === 1 && !isMultiTouch) {
-                        // Pan
-                        const deltaX = e.touches[0].clientX - lastTouchX;
-                        const deltaY = e.touches[0].clientY - lastTouchY;
-                        
-                        translateX = initialTranslateX + deltaX;
-                        translateY = initialTranslateY + deltaY;
-                        
-                        updateTransform();
-                    }
-                }, { passive: false });
-                
-                viewport.addEventListener('touchend', (e) => {
-                    if (e.touches.length < 2) {
-                        isMultiTouch = false;
-                    }
-                    
-                    // Reset on triple tap
-                    if (e.changedTouches.length === 1 && Date.now() - (this.lastTapTime || 0) < 300) {
-                        this.tapCount = (this.tapCount || 0) + 1;
-                        if (this.tapCount >= 3) {
-                            resetTransform();
-                            this.tapCount = 0;
-                            this.showNotification('Vue réinitialisée', 'info');
-                        }
-                    } else {
-                        this.tapCount = 1;
-                    }
-                    this.lastTapTime = Date.now();
-                });
-                
-                // Double tap to center/reset
-                viewport.addEventListener('dblclick', (e) => {
-                    e.preventDefault();
-                    resetTransform();
-                    this.showNotification('Vue centrée', 'info');
-                });
-            }
-            
-            storeData(key, data) {
-                try {
-                    // Store in memory for session
-                    window[key] = data;
-                    
-                    // Try to store in localStorage (may fail in some environments)
-                    if (typeof localStorage !== 'undefined') {
-                        localStorage.setItem(key, data);
-                    }
-                } catch (error) {
-                    console.log('Storage not available:', error);
-                }
-            }
-            
-            loadStoredImages() {
-                try {
-                    const baseStored = window.baseImage || (typeof localStorage !== 'undefined' && localStorage.getItem('baseImage'));
-                    const overlayStored = window.overlayImage || (typeof localStorage !== 'undefined' && localStorage.getItem('overlayImage'));
-                    const georefStored = window.georeferencing || (typeof localStorage !== 'undefined' && localStorage.getItem('georeferencing'));
-                    
-                    if (baseStored) {
-                        this.baseImage = baseStored;
-                        this.elements.baseLayer.style.backgroundImage = `url(${baseStored})`;
-                        this.elements.baseCard.classList.add('loaded');
-                        this.elements.baseCard.innerHTML = `
-                            <div class="card-content">
-                                <div class="card-icon">✅</div>
-                                <div class="card-title">Carte chargée</div>
-                                <div class="card-subtitle">Cliquez pour changer</div>
-                            </div>
-                        `;
-                    }
-                    
-                    if (overlayStored) {
-                        this.overlayImage = overlayStored;
-                        this.elements.overlayLayer.style.backgroundImage = `url(${overlayStored})`;
-                        this.elements.overlayCard.classList.add('loaded');
-                        this.elements.overlayCard.innerHTML = `
-                            <div class="card-content">
-                                <div class="card-icon">✅</div>
-                                <div class="card-title">Relief chargé</div>
-                                <div class="card-subtitle">Cliquez pour changer</div>
-                            </div>
-                        `;
-                        this.elements.transparencySlider.disabled = false;
-                    }
-                    
-                    // Load georeferencing data
-                    if (georefStored) {
-                        try {
-                            this.georeferencing = JSON.parse(georefStored);
-                            this.elements.latNorth.value = this.georeferencing.latNorth;
-                            this.elements.latSouth.value = this.georeferencing.latSouth;
-                            this.elements.lonWest.value = this.georeferencing.lonWest;
-                            this.elements.lonEast.value = this.georeferencing.lonEast;
-                        } catch (e) {
-                            console.log('Could not parse georeferencing data');
-                        }
-                    }
-                    
-                    this.updateStatus();
-                    
-                } catch (error) {
-                    console.log('Could not load stored images:', error);
-                }
-            }
-            
-            registerServiceWorker() {
-                if ('serviceWorker' in navigator) {
-                    const swCode = `
-                        const CACHE_NAME = 'relief-marin-v2';
-                        const urlsToCache = [
-                            './',
-                            './index.html'
-                        ];
-                        
-                        self.addEventListener('install', (event) => {
-                            event.waitUntil(
-                                caches.open(CACHE_NAME)
-                                .then((cache) => cache.addAll(urlsToCache))
-                            );
-                        });
-                        
-                        self.addEventListener('fetch', (event) => {
-                            event.respondWith(
-                                caches.match(event.request)
-                                .then((response) => {
-                                    return response || fetch(event.request);
-                                })
-                            );
-                        });
-                        
-                        self.addEventListener('activate', (event) => {
-                            event.waitUntil(
-                                caches.keys().then((cacheNames) => {
-                                    return Promise.all(
-                                        cacheNames.map((cacheName) => {
-                                            if (cacheName !== CACHE_NAME) {
-                                                return caches.delete(cacheName);
-                                            }
-                                        })
-                                    );
-                                })
-                            );
-                        });
-                    `;
-                    
-                    const blob = new Blob([swCode], { type: 'application/javascript' });
-                    const swUrl = URL.createObjectURL(blob);
-                    
-                    navigator.serviceWorker.register(swUrl)
-                        .then((registration) => {
-                            console.log('ServiceWorker registered:', registration);
-                        })
-                        .catch((error) => {
-                            console.log('ServiceWorker registration failed:', error);
-                        });
-                }
+            toggle() {
+                this.isVisible = !this.isVisible;
+                this.logElement.classList.toggle('visible', this.isVisible);
+                this.log(`Log ${this.isVisible ? 'affiché' : 'masqué'}`, 'info');
             }
         }
         
-        // Initialize app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            // Add notification styles
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
-                    to { transform: translateX(-50%) translateY(0); opacity: 1; }
-                }
-                @keyframes slideOut {
-                    to { transform: translateX(-50%) translateY(-20px); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
+        // Notification system
+        function showNotification(message, type = 'success') {
+            logger.log(`Notification: ${message}`, type);
             
-            // Initialize app
-            window.reliefApp = new ReliefMarinApp();
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            notification.style.background = type === 'error' ? '#ef4444' : 
+                                          type === 'warning' ? '#f59e0b' : '#10b981';
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease forwards';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                    notification.style.animation = 'slideIn 0.3s ease';
+                }, 300);
+            }, 3000);
+        }
+        
+        // GPS Test Function
+        function testGPS() {
+            logger.log('Test GPS démarré', 'info');
+            
+            if (!navigator.geolocation) {
+                logger.log('Geolocation non supportée', 'error');
+                showNotification('GPS non supporté sur cet appareil', 'error');
+                return;
+            }
+            
+            const testBtn = document.getElementById('testGPS');
+            testBtn.textContent = '📡 Localisation en cours...';
+            testBtn.disabled = true;
+            
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 300000
+            };
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude, accuracy } = position.coords;
+                    logger.log(`GPS OK - Lat: ${latitude.toFixed(6)}, Lon: ${longitude.toFixed(6)}, Précision: ${Math.round(accuracy)}m`, 'success');
+                    showNotification(`GPS OK! Précision: ${Math.round(accuracy)}m`);
+                    testBtn.textContent = '✅ GPS Fonctionnel';
+                    testBtn.className = 'test-button success';
+                    testBtn.disabled = false;
+                },
+                (error) => {
+                    let message = 'Erreur GPS inconnue';
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            message = 'Permission GPS refusée';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            message = 'Position GPS indisponible';
+                            break;
+                        case error.TIMEOUT:
+                            message = 'Timeout GPS';
+                            break;
+                    }
+                    
+                    logger.log(`Erreur GPS: ${message}`, 'error');
+                    showNotification(message, 'error');
+                    testBtn.textContent = '❌ Erreur GPS';
+                    testBtn.className = 'test-button danger';
+                    testBtn.disabled = false;
+                },
+                options
+            );
+        }
+        
+        // Touch Test Function  
+        function testTouchEvents() {
+            logger.log('Test Touch Events', 'info');
+            
+            let touchCount = 0;
+            const testBtn = document.getElementById('testTouch');
+            
+            // Test different touch events
+            const events = ['touchstart', 'touchmove', 'touchend', 'click'];
+            
+            events.forEach(eventType => {
+                testBtn.addEventListener(eventType, (e) => {
+                    touchCount++;
+                    logger.log(`${eventType} détecté (#${touchCount})`, 'success');
+                    
+                    if (eventType === 'touchstart' || eventType === 'click') {
+                        testBtn.textContent = `✅ Touch OK (${touchCount})`;
+                        testBtn.className = 'test-button success';
+                        showNotification(`Événement ${eventType} détecté!`);
+                    }
+                }, { passive: false });
+            });
+            
+            logger.log('Event listeners ajoutés', 'success');
+        }
+        
+        // Complete test
+        function runCompleteTest() {
+            logger.log('=== TEST COMPLET DÉMARRÉ ===', 'warning');
+            
+            const tests = [
+                'Vérification du navigateur',
+                'Test des événements tactiles', 
+                'Test des notifications',
+                'Test de la géolocalisation',
+                'Vérification HTTPS'
+            ];
+            
+            tests.forEach((test, index) => {
+                setTimeout(() => {
+                    logger.log(`${index + 1}/${tests.length}: ${test}`, 'info');
+                    
+                    if (index === tests.length - 1) {
+                        logger.log('=== TEST COMPLET TERMINÉ ===', 'success');
+                        showNotification('Test complet terminé! Consultez le log.');
+                    }
+                }, index * 1000);
+            });
+            
+            // Test HTTPS
+            const isHTTPS = window.location.protocol === 'https:';
+            logger.log(`Protocole: ${window.location.protocol} (HTTPS: ${isHTTPS ? 'OUI' : 'NON'})`, isHTTPS ? 'success' : 'warning');
+            
+            // Test User Agent
+            logger.log(`User Agent: ${navigator.userAgent}`, 'info');
+            
+            // Test Screen Size
+            logger.log(`Écran: ${window.innerWidth}x${window.innerHeight}`, 'info');
+            
+            // Test Touch Support
+            const touchSupport = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            logger.log(`Support tactile: ${touchSupport ? 'OUI' : 'NON'}`, touchSupport ? 'success' : 'warning');
+        }
+        
+        // Initialize debug logger
+        const logger = new DebugLogger();
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            logger.log('DOM chargé', 'success');
+            
+            try {
+                // Test basic functionality
+                const testButtons = {
+                    testTouch: testTouchEvents,
+                    testNotification: () => {
+                        logger.log('Test notification', 'info');
+                        showNotification('Test notification réussi!');
+                    },
+                    testGPS: testGPS,
+                    testLog: () => logger.toggle(),
+                    testAll: runCompleteTest,
+                    fabTest: () => {
+                        logger.log('FAB cliqué!', 'success');
+                        showNotification('FAB fonctionne!');
+                    }
+                };
+                
+                // Add event listeners
+                Object.entries(testButtons).forEach(([id, handler]) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            logger.log(`Bouton ${id} cliqué`, 'success');
+                            handler();
+                        });
+                        
+                        element.addEventListener('touchstart', (e) => {
+                            logger.log(`Touch start sur ${id}`, 'info');
+                        }, { passive: true });
+                        
+                        logger.log(`Event listeners ajoutés pour ${id}`, 'success');
+                    } else {
+                        logger.log(`Élément ${id} non trouvé!`, 'error');
+                    }
+                });
+                
+                logger.log('Initialisation terminée avec succès', 'success');
+                showNotification('App initialisée - Cliquez sur les boutons!');
+                
+                // Auto-show log for first 10 seconds
+                logger.toggle();
+                setTimeout(() => {
+                    if (logger.isVisible) {
+                        logger.toggle();
+                    }
+                }, 10000);
+                
+            } catch (error) {
+                logger.log(`Erreur d'initialisation: ${error.message}`, 'error');
+                console.error('Erreur:', error);
+            }
         });
+        
+        // Global error handler
+        window.addEventListener('error', (e) => {
+            logger.log(`Erreur globale: ${e.message}`, 'error');
+            showNotification('Erreur détectée! Consultez le log.', 'error');
+        });
+        
+        // Log page load
+        window.addEventListener('load', () => {
+            logger.log('Page entièrement chargée', 'success');
+        });
+        
     </script>
 </body>
 </html>
