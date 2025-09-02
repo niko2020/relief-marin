@@ -445,6 +445,10 @@ class ReliefMarinApp {
         let initialScale = 1;
         let initialTranslateX = 0;
         let initialTranslateY = 0;
+        let initialFocalX = 0;
+        let initialFocalY = 0;
+        let initialTranslateXForZoom = 0;
+        let initialTranslateYForZoom = 0;
         
         const viewport = document.querySelector('.map-viewport');
         
@@ -541,6 +545,16 @@ class ReliefMarinApp {
                     touch2.clientY - touch1.clientY
                 );
                 initialScale = scale;
+                
+                // Calculer le point focal initial entre les deux doigts
+                const rect = viewport.getBoundingClientRect();
+                initialFocalX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+                initialFocalY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+                
+                // Sauvegarder la translation initiale pour le zoom focal
+                initialTranslateXForZoom = translateX;
+                initialTranslateYForZoom = translateY;
+                
             } else if (e.touches.length === 1) {
                 isMultiTouch = false;
                 lastTouchX = e.touches[0].clientX;
@@ -563,10 +577,28 @@ class ReliefMarinApp {
                 
                 const scaleChange = currentDistance / initialDistance;
                 const minScale = calculateMinScale();
-                // Augmentation de la limite de zoom de 5x à 25x pour exploration détaillée
-                scale = Math.min(Math.max(minScale, initialScale * scaleChange), 25);
+                const newScale = Math.min(Math.max(minScale, initialScale * scaleChange), 25);
                 
+                // Calculer le point focal actuel
+                const rect = viewport.getBoundingClientRect();
+                const currentFocalX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+                const currentFocalY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+                
+                // Calculer la compensation de translation pour maintenir le point focal fixe
+                const scaleDelta = newScale - initialScale;
+                const viewportCenterX = rect.width / 2;
+                const viewportCenterY = rect.height / 2;
+                
+                // Ajuster la translation pour que le zoom se fasse depuis le point focal
+                const focalOffsetX = initialFocalX - viewportCenterX;
+                const focalOffsetY = initialFocalY - viewportCenterY;
+                
+                translateX = initialTranslateXForZoom - (focalOffsetX * scaleDelta);
+                translateY = initialTranslateYForZoom - (focalOffsetY * scaleDelta);
+                
+                scale = newScale;
                 updateTransform();
+                
             } else if (e.touches.length === 1 && !isMultiTouch) {
                 const deltaX = e.touches[0].clientX - lastTouchX;
                 const deltaY = e.touches[0].clientY - lastTouchY;
