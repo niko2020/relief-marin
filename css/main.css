@@ -69,72 +69,6 @@ body {
     position: relative;
 }
 
-/* Minimal Header */
-.app-header {
-    background: var(--glass);
-    backdrop-filter: var(--blur);
-    -webkit-backdrop-filter: var(--blur);
-    border-bottom: 1px solid var(--border);
-    padding: max(env(safe-area-inset-top), 8px) 16px 8px 16px;
-    position: relative;
-    z-index: 100;
-    flex-shrink: 0;
-}
-
-.header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.app-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.app-icon {
-    width: 24px;
-    height: 24px;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    box-shadow: var(--shadow-sm);
-}
-
-.app-title h1 {
-    font-size: 1rem;
-    font-weight: 600;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-}
-
-.status-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
 /* Full Screen Map Container */
 .map-viewport {
     flex: 1;
@@ -143,6 +77,40 @@ body {
     background: var(--surface);
     touch-action: pan-x pan-y pinch-zoom;
     min-height: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Status Debug (minimal, top-right corner) */
+.status-debug {
+    position: fixed;
+    top: max(env(safe-area-inset-top), 8px);
+    right: max(env(safe-area-inset-right), 8px);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 4px 8px;
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 200;
+    opacity: 0.7;
+}
+
+.status-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 
 .map-layer {

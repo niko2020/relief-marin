@@ -1,7 +1,7 @@
-/* Floating Controls Container */
-.floating-controls {
+/* Bottom Controls Container */
+.bottom-controls {
     position: fixed;
-    top: max(env(safe-area-inset-top), 16px);
+    bottom: max(env(safe-area-inset-bottom), 16px);
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -9,9 +9,10 @@
     gap: 12px;
     z-index: 50;
     pointer-events: none;
+    align-items: center;
 }
 
-.floating-controls > * {
+.bottom-controls > * {
     pointer-events: auto;
 }
 

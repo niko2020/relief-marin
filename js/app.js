@@ -481,7 +481,34 @@ class ReliefMarinApp {
         
         const viewport = document.querySelector('.map-viewport');
         
+        // Calculate minimum scale to keep image always filling the screen
+        const calculateMinScale = () => {
+            const rect = viewport.getBoundingClientRect();
+            const viewportRatio = rect.width / rect.height;
+            
+            // Assume image is roughly 4:3 or 16:9, use conservative estimate
+            const imageRatio = 4/3; // Most maps are landscape
+            
+            if (viewportRatio > imageRatio) {
+                // Viewport is wider than image, scale to fit height
+                return 1.0;
+            } else {
+                // Viewport is taller than image, scale to fit width
+                return 1.0;
+            }
+        };
+        
         const updateTransform = () => {
+            const minScale = calculateMinScale();
+            
+            // Enforce minimum scale to prevent empty margins
+            if (scale < minScale) {
+                scale = minScale;
+                // Center the image when at minimum scale
+                translateX = 0;
+                translateY = 0;
+            }
+            
             const transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
             this.elements.baseLayer.style.transform = transform;
             this.elements.overlayLayer.style.transform = transform;
@@ -542,7 +569,8 @@ class ReliefMarinApp {
                 );
                 
                 const scaleChange = currentDistance / initialDistance;
-                scale = Math.min(Math.max(0.25, initialScale * scaleChange), 5);
+                const minScale = calculateMinScale();
+                scale = Math.min(Math.max(minScale, initialScale * scaleChange), 5);
                 
                 updateTransform();
             } else if (e.touches.length === 1 && !isMultiTouch) {
@@ -576,6 +604,11 @@ class ReliefMarinApp {
         viewport.addEventListener('dblclick', (e) => {
             e.preventDefault();
             resetTransform();
+        });
+        
+        // Handle window resize to recalculate min scale
+        window.addEventListener('resize', () => {
+            updateTransform();
         });
     }
     

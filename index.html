@@ -23,20 +23,6 @@
     <div class="app-background"></div>
     
     <div class="app-container">
-        <!-- Minimal Header -->
-        <header class="app-header">
-            <div class="header-content">
-                <div class="app-title">
-                    <div class="app-icon">🌊</div>
-                    <h1>Relief Marin</h1>
-                </div>
-                <div class="status-indicator">
-                    <div class="status-dot" id="statusDot"></div>
-                    <span id="statusText">Chargement...</span>
-                </div>
-            </div>
-        </header>
-        
         <!-- Full Screen Map Viewport -->
         <div class="map-viewport">
             <div class="map-layer base-layer" id="baseLayer"></div>
@@ -44,8 +30,8 @@
             <div class="gps-marker" id="gpsMarker"></div>
         </div>
         
-        <!-- Floating Controls (2 contrôles uniquement) -->
-        <div class="floating-controls">
+        <!-- Bottom Controls -->
+        <div class="bottom-controls">
             <!-- Transparency Control -->
             <div class="transparency-control">
                 <span class="transparency-label">Satellite</span>
@@ -58,7 +44,7 @@
             <!-- Base Layer Toggle -->
             <div class="base-toggle">
                 <button class="toggle-button active" id="satelliteBtn">SATELLITE</button>
-                <button class="toggle-button" id="mapsBtn">MARINE</button>
+                <button class="toggle-button" id="mapsBtn">CARTE</button>
             </div>
         </div>
         
@@ -66,6 +52,12 @@
         <button class="gps-button" id="gpsButton" title="Ma position">
             📍
         </button>
+        
+        <!-- Status indicator (minimal, debug only) -->
+        <div class="status-debug" id="statusDebug">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">Chargement...</span>
+        </div>
     </div>
 
     <!-- JavaScript -->
