@@ -1,0 +1,19 @@
+{
+  "bounds": {
+    "north": 43.3000,
+    "south": 43.2500,
+    "west": 5.3500,
+    "east": 5.4000
+  },
+  "center": {
+    "lat": 43.2750,
+    "lon": 5.3750
+  },
+  "name": "Zone Relief Marin",
+  "description": "Cartes sous-marines - Méditerranée",
+  "images": {
+    "satellite": "media/satellite.jpg",
+    "relief": "media/relief.jpg",
+    "maps": "media/maps.jpg"
+  }
+}

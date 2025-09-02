@@ -1,0 +1,299 @@
+/* Floating Controls Container */
+.floating-controls {
+    position: fixed;
+    top: max(env(safe-area-inset-top), 16px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 50;
+    pointer-events: none;
+}
+
+.floating-controls > * {
+    pointer-events: auto;
+}
+
+/* Transparency Control */
+.transparency-control {
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--shadow);
+    min-width: 280px;
+}
+
+.transparency-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.transparency-slider {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--surface);
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+.transparency-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    cursor: pointer;
+    box-shadow: 
+        0 2px 8px rgba(14, 165, 233, 0.4),
+        0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.transparency-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 
+        0 4px 12px rgba(14, 165, 233, 0.5),
+        0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.transparency-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    cursor: pointer;
+    border: none;
+    box-shadow: 
+        0 2px 8px rgba(14, 165, 233, 0.4),
+        0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.transparency-value {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+    padding: 4px 8px;
+    background: rgba(14, 165, 233, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    min-width: 40px;
+    text-align: center;
+}
+
+/* Base Layer Toggle */
+.base-toggle {
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    box-shadow: var(--shadow);
+    align-self: center;
+}
+
+.toggle-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+    color: var(--text-secondary);
+    position: relative;
+    overflow: hidden;
+}
+
+.toggle-button.active {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    box-shadow: 
+        0 2px 8px rgba(14, 165, 233, 0.3),
+        0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.toggle-button:hover::before {
+    left: 100%;
+}
+
+.toggle-button:hover:not(.active) {
+    background: var(--surface);
+    color: var(--text-primary);
+}
+
+/* GPS Button (minimal) */
+.gps-button {
+    position: fixed;
+    bottom: max(env(safe-area-inset-bottom), 20px);
+    right: max(env(safe-area-inset-right), 20px);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    z-index: 40;
+}
+
+.gps-button:hover, .gps-button:active {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.2),
+        0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.gps-button.active {
+    background: linear-gradient(135deg, var(--accent), #059669);
+    box-shadow: 
+        var(--shadow),
+        0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.gps-button:disabled {
+    background: var(--surface-light);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .floating-controls {
+        top: max(env(safe-area-inset-top), 12px);
+        gap: 8px;
+    }
+    
+    .transparency-control {
+        padding: 10px 12px;
+        min-width: 260px;
+        gap: 10px;
+    }
+    
+    .transparency-label {
+        font-size: 0.7rem;
+    }
+    
+    .transparency-value {
+        font-size: 0.7rem;
+        padding: 3px 6px;
+        min-width: 35px;
+    }
+    
+    .transparency-slider::-webkit-slider-thumb {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .transparency-slider::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .base-toggle {
+        padding: 6px;
+    }
+    
+    .toggle-button {
+        padding: 6px 12px;
+        font-size: 0.7rem;
+    }
+    
+    .gps-button {
+        width: 44px;
+        height: 44px;
+        font-size: 16px;
+        bottom: max(env(safe-area-inset-bottom), 16px);
+        right: max(env(safe-area-inset-right), 16px);
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 400px) {
+    .transparency-control {
+        min-width: 240px;
+        padding: 8px 10px;
+    }
+    
+    .transparency-label {
+        font-size: 0.65rem;
+    }
+    
+    .transparency-value {
+        font-size: 0.65rem;
+        min-width: 30px;
+    }
+    
+    .toggle-button {
+        padding: 5px 10px;
+        font-size: 0.65rem;
+    }
+}
+
+/* Landscape mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .floating-controls {
+        top: max(env(safe-area-inset-top), 8px);
+        gap: 6px;
+    }
+    
+    .transparency-control {
+        padding: 8px 12px;
+    }
+    
+    .base-toggle {
+        padding: 4px;
+    }
+    
+    .gps-button {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+        bottom: max(env(safe-area-inset-bottom), 12px);
+        right: max(env(safe-area-inset-right), 12px);
+    }
+}
+
+/* Prevent zoom on input focus */
+@media (max-width: 768px) {
+    input[type="range"] {
+        font-size: 16px !important;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+}
