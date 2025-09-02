@@ -15,8 +15,6 @@ class ReliefMarinApp {
             baseLayer: document.getElementById('baseLayer'),
             overlayLayer: document.getElementById('overlayLayer'),
             gpsMarker: document.getElementById('gpsMarker'),
-            statusText: document.getElementById('statusText'),
-            statusDot: document.getElementById('statusDot'),
             transparencySlider: document.getElementById('transparencySlider'),
             transparencyValue: document.getElementById('transparencyValue'),
             satelliteBtn: document.getElementById('satelliteBtn'),
@@ -222,17 +220,6 @@ class ReliefMarinApp {
             this.getCurrentPosition();
         });
         
-        // Debug info (long press on status)
-        let statusPressTimer;
-        this.elements.statusText.addEventListener('touchstart', (e) => {
-            statusPressTimer = setTimeout(() => {
-                this.showDebugInfo();
-            }, 2000);
-        });
-        
-        this.elements.statusText.addEventListener('touchend', () => {
-            clearTimeout(statusPressTimer);
-        });
     }
     
     updateTransparency(value) {
@@ -387,27 +374,7 @@ class ReliefMarinApp {
     }
     
     updateStatus(message) {
-        this.elements.statusText.textContent = message;
-        
-        // Indicateur visuel selon l'état
-        const hasRealImages = Object.values(this.images).some(img => 
-            img && !img.startsWith('data:image/canvas')
-        );
-        
-        if (message.includes('Prêt')) {
-            if (hasRealImages) {
-                this.elements.statusDot.style.background = 'var(--accent)';
-                this.elements.statusText.textContent = 'Images réelles';
-            } else {
-                this.elements.statusDot.style.background = 'var(--warning)';
-                this.elements.statusText.textContent = 'Images de démo';
-            }
-        } else if (message.includes('Chargement')) {
-            this.elements.statusDot.style.background = 'var(--primary)';
-        } else {
-            this.elements.statusDot.style.background = 'var(--accent)';
-        }
-        
+        // Status simplifié - log uniquement
         console.log(`📊 Status: ${message}`);
     }
     
@@ -498,6 +465,27 @@ class ReliefMarinApp {
             }
         };
         
+        // Calculate translation constraints to keep image always visible
+        const constrainTranslation = (newTranslateX, newTranslateY, currentScale) => {
+            const rect = viewport.getBoundingClientRect();
+            const viewportWidth = rect.width;
+            const viewportHeight = rect.height;
+            
+            // Calculate scaled image dimensions
+            const scaledWidth = viewportWidth * currentScale;
+            const scaledHeight = viewportHeight * currentScale;
+            
+            // Calculate maximum allowed translation
+            const maxTranslateX = Math.max(0, (scaledWidth - viewportWidth) / 2);
+            const maxTranslateY = Math.max(0, (scaledHeight - viewportHeight) / 2);
+            
+            // Constrain translation within bounds
+            const constrainedX = Math.min(Math.max(newTranslateX, -maxTranslateX), maxTranslateX);
+            const constrainedY = Math.min(Math.max(newTranslateY, -maxTranslateY), maxTranslateY);
+            
+            return { x: constrainedX, y: constrainedY };
+        };
+        
         const updateTransform = () => {
             const minScale = calculateMinScale();
             
@@ -507,6 +495,11 @@ class ReliefMarinApp {
                 // Center the image when at minimum scale
                 translateX = 0;
                 translateY = 0;
+            } else {
+                // Apply translation constraints for zoomed images
+                const constrained = constrainTranslation(translateX, translateY, scale);
+                translateX = constrained.x;
+                translateY = constrained.y;
             }
             
             const transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
@@ -570,7 +563,8 @@ class ReliefMarinApp {
                 
                 const scaleChange = currentDistance / initialDistance;
                 const minScale = calculateMinScale();
-                scale = Math.min(Math.max(minScale, initialScale * scaleChange), 5);
+                // Augmentation de la limite de zoom de 5x à 25x pour exploration détaillée
+                scale = Math.min(Math.max(minScale, initialScale * scaleChange), 25);
                 
                 updateTransform();
             } else if (e.touches.length === 1 && !isMultiTouch) {
