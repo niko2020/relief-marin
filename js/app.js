@@ -27,16 +27,20 @@ class ReliefMarinApp {
     
     async initializeApp() {
         try {
+            this.showLoadingOverlay('Initialisation...');
             this.updateStatus('Initialisation...');
             
             // Load configuration
             await this.loadConfiguration();
+            this.updateLoadingOverlay('Configuration chargée...');
             
-            // Load images
+            // Load images with progress
             await this.loadImages();
+            this.updateLoadingOverlay('Images chargées...');
             
             // Initialize event listeners
             this.initializeEventListeners();
+            this.initializeKeyboardNavigation();
             
             // Initialize touch controls
             this.initializeTouchControls();
@@ -50,10 +54,13 @@ class ReliefMarinApp {
             // Display initial state
             this.displayImages();
             
+            this.hideLoadingOverlay();
             this.updateStatus('Prêt');
+            this.showNotification('Application prête', 'success');
             
         } catch (error) {
             console.error('Erreur d\'initialisation:', error);
+            this.hideLoadingOverlay();
             this.updateStatus('Erreur de chargement');
             this.showNotification('Erreur lors du chargement', 'error');
         }
@@ -242,6 +249,10 @@ class ReliefMarinApp {
     updateToggleButtons() {
         this.elements.satelliteBtn.classList.toggle('active', this.currentBase === 'satellite');
         this.elements.mapsBtn.classList.toggle('active', this.currentBase === 'maps');
+        
+        // Update ARIA attributes for accessibility
+        this.elements.satelliteBtn.setAttribute('aria-pressed', this.currentBase === 'satellite');
+        this.elements.mapsBtn.setAttribute('aria-pressed', this.currentBase === 'maps');
     }
     
     getCurrentPosition() {
@@ -416,6 +427,97 @@ class ReliefMarinApp {
         }, 2500);
     }
     
+    showLoadingOverlay(message) {
+        let overlay = document.getElementById('loadingOverlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'loadingOverlay';
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = `
+                <div class="loading-content">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text" id="loadingText">${message}</div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+        
+        overlay.classList.add('active');
+        this.updateLoadingOverlay(message);
+    }
+    
+    updateLoadingOverlay(message) {
+        const loadingText = document.getElementById('loadingText');
+        if (loadingText) {
+            loadingText.textContent = message;
+        }
+    }
+    
+    hideLoadingOverlay() {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) {
+            overlay.classList.remove('active');
+            setTimeout(() => {
+                if (overlay.parentNode) {
+                    overlay.parentNode.removeChild(overlay);
+                }
+            }, 300);
+        }
+    }
+    
+    initializeKeyboardNavigation() {
+        // Support navigation clavier pour l'accessibilité
+        document.addEventListener('keydown', (e) => {
+            // Échapper pour réinitialiser la vue
+            if (e.key === 'Escape') {
+                this.resetMapView();
+            }
+            
+            // Touches 1 et 2 pour changer de couche de base
+            if (e.key === '1') {
+                this.switchBase('satellite');
+            } else if (e.key === '2') {
+                this.switchBase('maps');
+            }
+            
+            // Espace pour GPS
+            if (e.key === ' ' && e.target === document.body) {
+                e.preventDefault();
+                this.getCurrentPosition();
+            }
+            
+            // Flèches pour ajuster la transparence
+            if (e.target === this.elements.transparencySlider) {
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                    const newValue = Math.max(0, parseInt(this.elements.transparencySlider.value) - 5);
+                    this.elements.transparencySlider.value = newValue;
+                    this.updateTransparency(newValue);
+                } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                    const newValue = Math.min(100, parseInt(this.elements.transparencySlider.value) + 5);
+                    this.elements.transparencySlider.value = newValue;
+                    this.updateTransparency(newValue);
+                }
+            }
+        });
+    }
+    
+    resetMapView() {
+        // Réinitialiser la vue de la carte (zoom et position)
+        const viewport = document.querySelector('.map-viewport');
+        if (viewport) {
+            this.elements.baseLayer.style.transform = 'translate(0px, 0px) scale(1)';
+            this.elements.overlayLayer.style.transform = 'translate(0px, 0px) scale(1)';
+            this.showNotification('Vue réinitialisée', 'info');
+        }
+    }
+    
+    updateGPSStatus(message) {
+        const gpsStatus = document.getElementById('gps-status');
+        if (gpsStatus) {
+            gpsStatus.textContent = message;
+        }
+    }
+    
     showDebugInfo() {
         const debugInfo = [
             `📊 État des images:`,
@@ -428,7 +530,13 @@ class ReliefMarinApp {
             `• Relief opacity: ${Math.round(this.reliefOpacity * 100)}%`,
             ``,
             `📍 GPS: ${this.currentPosition ? '✅ Actif' : '⏸️ Inactif'}`,
-            `🌍 Zone: ${this.config.name}`
+            `🌍 Zone: ${this.config.name}`,
+            ``,
+            `⌨️ Raccourcis clavier:`,
+            `• Échap: Réinitialiser la vue`,
+            `• 1: Vue satellite`,
+            `• 2: Carte marine`,
+            `• Espace: GPS`
         ].join('\n');
         
         alert(debugInfo);
@@ -579,22 +687,22 @@ class ReliefMarinApp {
                 const minScale = calculateMinScale();
                 const newScale = Math.min(Math.max(minScale, initialScale * scaleChange), 25);
                 
-                // Calculer le point focal actuel
+                // Calculer le point focal actuel (centre entre les deux doigts)
                 const rect = viewport.getBoundingClientRect();
                 const currentFocalX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
                 const currentFocalY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
                 
-                // Calculer la compensation de translation pour maintenir le point focal fixe
-                const scaleDelta = newScale - initialScale;
-                const viewportCenterX = rect.width / 2;
-                const viewportCenterY = rect.height / 2;
+                // Formule correcte pour le zoom focal :
+                // Nouveau point = point_focal + (ancien_point - point_focal) * ratio_scale
+                const scaleRatio = newScale / initialScale;
                 
-                // Ajuster la translation pour que le zoom se fasse depuis le point focal
-                const focalOffsetX = initialFocalX - viewportCenterX;
-                const focalOffsetY = initialFocalY - viewportCenterY;
+                // Calculer la position du point focal dans le système de coordonnées transformé initial
+                const focalInTransformedX = (initialFocalX - initialTranslateXForZoom) / initialScale;
+                const focalInTransformedY = (initialFocalY - initialTranslateYForZoom) / initialScale;
                 
-                translateX = initialTranslateXForZoom - (focalOffsetX * scaleDelta);
-                translateY = initialTranslateYForZoom - (focalOffsetY * scaleDelta);
+                // Appliquer la nouvelle transformation en gardant le point focal fixe
+                translateX = initialFocalX - (focalInTransformedX * newScale);
+                translateY = initialFocalY - (focalInTransformedY * newScale);
                 
                 scale = newScale;
                 updateTransform();
