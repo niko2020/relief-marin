@@ -54,6 +54,9 @@ class ReliefMarinApp {
             // Display initial state
             this.displayImages();
             
+            // Show version badge
+            this.showVersionBadge();
+            
             this.hideLoadingOverlay();
             this.updateStatus('Prêt');
             this.showNotification('Application prête', 'success');
@@ -542,6 +545,73 @@ class ReliefMarinApp {
         alert(debugInfo);
     }
     
+    showVersionBadge() {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        
+        const badge = document.createElement('div');
+        badge.id = 'versionBadge';
+        badge.style.cssText = `
+            position: fixed;
+            bottom: calc(max(env(safe-area-inset-bottom), 10px) + 10px);
+            right: 10px;
+            background: rgba(15, 23, 42, 0.95);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            z-index: 999;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            animation: fadeIn 0.3s ease;
+            transition: opacity 0.3s ease;
+        `;
+        
+        badge.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 2px; align-items: flex-end;">
+                <span style="color: var(--primary); font-weight: 600;">v2.0</span>
+                <span style="color: var(--text-secondary); font-size: 0.65rem;">${dateStr} ${timeStr}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(badge);
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            badge.style.opacity = '0';
+            setTimeout(() => {
+                if (badge.parentNode) {
+                    badge.parentNode.removeChild(badge);
+                }
+            }, 300);
+        }, 5000);
+        
+        // Hide on click
+        badge.addEventListener('click', () => {
+            badge.style.opacity = '0';
+            setTimeout(() => {
+                if (badge.parentNode) {
+                    badge.parentNode.removeChild(badge);
+                }
+            }, 300);
+        });
+        
+        // Add fadeIn animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
     initializeTouchControls() {
         let scale = 1;
         let translateX = 0;
@@ -717,6 +787,33 @@ class ReliefMarinApp {
         viewport.addEventListener('touchend', (e) => {
             if (e.touches.length < 2) {
                 isMultiTouch = false;
+            }
+            
+            // Appliquer les contraintes avec une transition douce au relâchement
+            if (e.touches.length === 0) {
+                // Activer les transitions CSS temporairement
+                this.elements.baseLayer.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                this.elements.overlayLayer.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                
+                // Appliquer les contraintes finales
+                const minScale = calculateMinScale();
+                if (scale < minScale) {
+                    scale = minScale;
+                    translateX = 0;
+                    translateY = 0;
+                } else {
+                    const constrained = constrainTranslation(translateX, translateY, scale);
+                    translateX = constrained.x;
+                    translateY = constrained.y;
+                }
+                
+                updateTransform();
+                
+                // Désactiver les transitions après l'animation
+                setTimeout(() => {
+                    this.elements.baseLayer.style.transition = '';
+                    this.elements.overlayLayer.style.transition = '';
+                }, 300);
             }
             
             if (e.changedTouches.length === 1 && Date.now() - (this.lastTapTime || 0) < 300) {
