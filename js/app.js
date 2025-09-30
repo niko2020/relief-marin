@@ -757,18 +757,21 @@ class ReliefMarinApp {
                 const minScale = calculateMinScale();
                 const newScale = Math.min(Math.max(minScale, initialScale * scaleChange), 25);
                 
-                // Formule correcte pour le zoom focal :
-                // Le point focal (initialFocalX, initialFocalY) doit rester à la même position à l'écran
-                // Équation : focalPoint = imagePoint * scale + translation
-                // On veut que le point image reste le même, donc :
-                // initialFocalX = imagePointX * initialScale + initialTranslateXForZoom
-                // initialFocalX = imagePointX * newScale + newTranslateX
-                // Donc : newTranslateX = initialTranslateXForZoom + (initialFocalX - initialTranslateXForZoom) * (1 - newScale/initialScale)
+                // Formule CORRECTE pour le zoom focal :
+                // 1. Calculer le point dans les coordonnées de l'image (non transformée)
+                //    imagePointX = (focalPointX - initialTranslateX) / initialScale
+                // 2. Ce point doit rester au même endroit à l'écran après le zoom :
+                //    focalPointX = imagePointX * newScale + newTranslateX
+                // 3. Donc : newTranslateX = focalPointX - imagePointX * newScale
+                //           newTranslateX = focalPointX - ((focalPointX - initialTranslateX) / initialScale) * newScale
                 
-                const scaleRatio = newScale / initialScale;
+                // Calculer les coordonnées du point focal dans l'image
+                const imagePointX = (initialFocalX - initialTranslateXForZoom) / initialScale;
+                const imagePointY = (initialFocalY - initialTranslateYForZoom) / initialScale;
                 
-                translateX = initialTranslateXForZoom + (initialFocalX - initialTranslateXForZoom) * (1 - scaleRatio);
-                translateY = initialTranslateYForZoom + (initialFocalY - initialTranslateYForZoom) * (1 - scaleRatio);
+                // Calculer la nouvelle translation pour garder ce point fixe à l'écran
+                translateX = initialFocalX - imagePointX * newScale;
+                translateY = initialFocalY - imagePointY * newScale;
                 
                 scale = newScale;
                 updateTransform();
