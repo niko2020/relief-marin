@@ -687,22 +687,18 @@ class ReliefMarinApp {
                 const minScale = calculateMinScale();
                 const newScale = Math.min(Math.max(minScale, initialScale * scaleChange), 25);
                 
-                // Calculer le point focal actuel (centre entre les deux doigts)
-                const rect = viewport.getBoundingClientRect();
-                const currentFocalX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
-                const currentFocalY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
-                
                 // Formule correcte pour le zoom focal :
-                // Nouveau point = point_focal + (ancien_point - point_focal) * ratio_scale
+                // Le point focal (initialFocalX, initialFocalY) doit rester à la même position à l'écran
+                // Équation : focalPoint = imagePoint * scale + translation
+                // On veut que le point image reste le même, donc :
+                // initialFocalX = imagePointX * initialScale + initialTranslateXForZoom
+                // initialFocalX = imagePointX * newScale + newTranslateX
+                // Donc : newTranslateX = initialTranslateXForZoom + (initialFocalX - initialTranslateXForZoom) * (1 - newScale/initialScale)
+                
                 const scaleRatio = newScale / initialScale;
                 
-                // Calculer la position du point focal dans le système de coordonnées transformé initial
-                const focalInTransformedX = (initialFocalX - initialTranslateXForZoom) / initialScale;
-                const focalInTransformedY = (initialFocalY - initialTranslateYForZoom) / initialScale;
-                
-                // Appliquer la nouvelle transformation en gardant le point focal fixe
-                translateX = initialFocalX - (focalInTransformedX * newScale);
-                translateY = initialFocalY - (focalInTransformedY * newScale);
+                translateX = initialTranslateXForZoom + (initialFocalX - initialTranslateXForZoom) * (1 - scaleRatio);
+                translateY = initialTranslateYForZoom + (initialFocalY - initialTranslateYForZoom) * (1 - scaleRatio);
                 
                 scale = newScale;
                 updateTransform();
