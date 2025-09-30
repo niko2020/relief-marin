@@ -757,21 +757,22 @@ class ReliefMarinApp {
                 const minScale = calculateMinScale();
                 const newScale = Math.min(Math.max(minScale, initialScale * scaleChange), 25);
                 
-                // Formule CORRECTE pour le zoom focal :
-                // 1. Calculer le point dans les coordonnées de l'image (non transformée)
-                //    imagePointX = (focalPointX - initialTranslateX) / initialScale
-                // 2. Ce point doit rester au même endroit à l'écran après le zoom :
-                //    focalPointX = imagePointX * newScale + newTranslateX
-                // 3. Donc : newTranslateX = focalPointX - imagePointX * newScale
-                //           newTranslateX = focalPointX - ((focalPointX - initialTranslateX) / initialScale) * newScale
+                // Formule CORRECTE pour le zoom focal dynamique :
+                // Le point de l'image qui était sous initialFocalX/Y au début du geste
+                // doit rester sous le centre ACTUEL des doigts pendant tout le mouvement
                 
-                // Calculer les coordonnées du point focal dans l'image
+                // 1. Calculer le centre ACTUEL entre les deux doigts
+                const rect = viewport.getBoundingClientRect();
+                const currentFocalX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+                const currentFocalY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+                
+                // 2. Identifier quel point de l'image était sous le centre des doigts au DÉBUT
                 const imagePointX = (initialFocalX - initialTranslateXForZoom) / initialScale;
                 const imagePointY = (initialFocalY - initialTranslateYForZoom) / initialScale;
                 
-                // Calculer la nouvelle translation pour garder ce point fixe à l'écran
-                translateX = initialFocalX - imagePointX * newScale;
-                translateY = initialFocalY - imagePointY * newScale;
+                // 3. Garder ce point d'image sous le centre ACTUEL des doigts
+                translateX = currentFocalX - imagePointX * newScale;
+                translateY = currentFocalY - imagePointY * newScale;
                 
                 scale = newScale;
                 updateTransform();
