@@ -28,7 +28,8 @@
     align-items: center;
     gap: 12px;
     box-shadow: var(--shadow);
-    min-width: 280px;
+    min-width: 240px;
+    max-width: min(320px, calc(100vw - 32px));
 }
 
 .transparency-label {
@@ -148,11 +149,10 @@
     color: var(--text-primary);
 }
 
-/* GPS Button (minimal) */
-.gps-button {
+/* GPS Button & Reset Button */
+.gps-button,
+.reset-button {
     position: fixed;
-    bottom: max(env(safe-area-inset-bottom), 20px);
-    right: max(env(safe-area-inset-right), 20px);
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -172,18 +172,35 @@
     z-index: 40;
 }
 
-.gps-button:hover, .gps-button:active {
+.gps-button {
+    top: max(env(safe-area-inset-top), 16px);
+    right: max(env(safe-area-inset-right), 16px);
+}
+
+.reset-button {
+    top: max(env(safe-area-inset-top), 76px);
+    right: max(env(safe-area-inset-right), 16px);
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.gps-button:hover, .gps-button:active,
+.reset-button:hover, .reset-button:active {
     transform: translateY(-2px) scale(1.05);
-    box-shadow: 
+    box-shadow:
         0 8px 20px rgba(0, 0, 0, 0.2),
         0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .gps-button.active {
     background: linear-gradient(135deg, var(--accent), #059669);
-    box-shadow: 
+    box-shadow:
         var(--shadow),
         0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.reset-button:hover {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
 }
 
 .gps-button:disabled {
@@ -202,7 +219,8 @@
     
     .transparency-control {
         padding: 10px 12px;
-        min-width: 260px;
+        min-width: 220px;
+        max-width: calc(100vw - 24px);
         gap: 10px;
     }
     
@@ -235,19 +253,30 @@
         font-size: 0.7rem;
     }
     
-    .gps-button {
+    .gps-button,
+    .reset-button {
         width: 44px;
         height: 44px;
+    }
+
+    .gps-button {
         font-size: 16px;
-        bottom: max(env(safe-area-inset-bottom), 16px);
-        right: max(env(safe-area-inset-right), 16px);
+        top: max(env(safe-area-inset-top), 12px);
+        right: max(env(safe-area-inset-right), 12px);
+    }
+
+    .reset-button {
+        font-size: 22px;
+        top: max(env(safe-area-inset-top), 64px);
+        right: max(env(safe-area-inset-right), 12px);
     }
 }
 
 /* Small mobile devices */
 @media (max-width: 400px) {
     .transparency-control {
-        min-width: 240px;
+        min-width: 200px;
+        max-width: calc(100vw - 20px);
         padding: 8px 10px;
     }
     
@@ -281,12 +310,22 @@
         padding: 4px;
     }
     
-    .gps-button {
+    .gps-button,
+    .reset-button {
         width: 40px;
         height: 40px;
+    }
+
+    .gps-button {
         font-size: 14px;
-        bottom: max(env(safe-area-inset-bottom), 12px);
-        right: max(env(safe-area-inset-right), 12px);
+        top: max(env(safe-area-inset-top), 8px);
+        right: max(env(safe-area-inset-right), 8px);
+    }
+
+    .reset-button {
+        font-size: 20px;
+        top: max(env(safe-area-inset-top), 56px);
+        right: max(env(safe-area-inset-right), 8px);
     }
 }
 
@@ -315,6 +354,7 @@
 /* Focus indicators for keyboard navigation */
 .toggle-button:focus,
 .gps-button:focus,
+.reset-button:focus,
 .transparency-slider:focus {
     outline: 2px solid var(--primary);
     outline-offset: 2px;
@@ -322,6 +362,7 @@
 
 .toggle-button:focus-visible,
 .gps-button:focus-visible,
+.reset-button:focus-visible,
 .transparency-slider:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -331,10 +372,11 @@
 @media (prefers-contrast: high) {
     .transparency-control,
     .base-toggle,
-    .gps-button {
+    .gps-button,
+    .reset-button {
         border: 2px solid var(--text-primary);
     }
-    
+
     .toggle-button.active {
         background: var(--text-primary);
         color: var(--background);

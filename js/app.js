@@ -7,7 +7,7 @@ class ReliefMarinApp {
             maps: null
         };
         this.currentBase = 'satellite'; // satellite ou maps
-        this.reliefOpacity = 0.7;
+        this.reliefOpacity = 0.5;
         this.currentPosition = null;
         
         // DOM Elements
@@ -16,10 +16,10 @@ class ReliefMarinApp {
             overlayLayer: document.getElementById('overlayLayer'),
             gpsMarker: document.getElementById('gpsMarker'),
             transparencySlider: document.getElementById('transparencySlider'),
-            transparencyValue: document.getElementById('transparencyValue'),
             satelliteBtn: document.getElementById('satelliteBtn'),
             mapsBtn: document.getElementById('mapsBtn'),
-            gpsButton: document.getElementById('gpsButton')
+            gpsButton: document.getElementById('gpsButton'),
+            resetButton: document.getElementById('resetButton')
         };
         
         this.initializeApp();
@@ -204,7 +204,10 @@ class ReliefMarinApp {
         
         // Update controls
         this.updateToggleButtons();
-        this.elements.transparencyValue.textContent = `${Math.round(this.reliefOpacity * 100)}%`;
+        const valueDisplay = document.getElementById('transparencyValue');
+        if (valueDisplay) {
+            valueDisplay.textContent = `${Math.round(this.reliefOpacity * 100)}%`;
+        }
         this.elements.transparencySlider.value = Math.round(this.reliefOpacity * 100);
         
         console.log('✅ Images affichées - Base:', this.currentBase, 'Relief opacity:', this.reliefOpacity);
@@ -229,13 +232,23 @@ class ReliefMarinApp {
         this.elements.gpsButton.addEventListener('click', () => {
             this.getCurrentPosition();
         });
-        
+
+        // Reset button
+        if (this.elements.resetButton) {
+            this.elements.resetButton.addEventListener('click', () => {
+                this.resetMapView();
+            });
+        }
+
     }
     
     updateTransparency(value) {
         this.reliefOpacity = value / 100;
         this.elements.overlayLayer.style.opacity = this.reliefOpacity;
-        this.elements.transparencyValue.textContent = `${value}%`;
+        const valueDisplay = document.getElementById('transparencyValue');
+        if (valueDisplay) {
+            valueDisplay.textContent = `${value}%`;
+        }
     }
     
     switchBase(baseType) {
@@ -395,7 +408,7 @@ class ReliefMarinApp {
     showNotification(message, type = 'success') {
         const notification = document.createElement('div');
         const isMobile = window.innerWidth <= 768;
-        const topPosition = isMobile ? 'calc(max(env(safe-area-inset-top), 10px) + 50px)' : '70px';
+        const topPosition = isMobile ? 'calc(max(env(safe-area-inset-top), 10px) + 10px)' : '70px';
         
         notification.style.cssText = `
             position: fixed;
@@ -619,81 +632,74 @@ class ReliefMarinApp {
         let initialDistance = 0;
         let lastTouchX = 0;
         let lastTouchY = 0;
-        let isMultiTouch = false;
+        let isPinching = false;
         let initialScale = 1;
         let initialTranslateX = 0;
         let initialTranslateY = 0;
-        let initialFocalX = 0;
-        let initialFocalY = 0;
-        let initialTranslateXForZoom = 0;
-        let initialTranslateYForZoom = 0;
-        
+        let pinchCenterX = 0;
+        let pinchCenterY = 0;
+
         const viewport = document.querySelector('.map-viewport');
+        const MAX_SCALE = 10;
+        const MIN_SCALE = 1;
         
-        // Calculate minimum scale to keep image always filling the screen
-        const calculateMinScale = () => {
+        // Get the center point between two touches
+        const getTouchCenter = (touch1, touch2) => {
             const rect = viewport.getBoundingClientRect();
-            const viewportRatio = rect.width / rect.height;
-            
-            // Assume image is roughly 4:3 or 16:9, use conservative estimate
-            const imageRatio = 4/3; // Most maps are landscape
-            
-            if (viewportRatio > imageRatio) {
-                // Viewport is wider than image, scale to fit height
-                return 1.0;
-            } else {
-                // Viewport is taller than image, scale to fit width
-                return 1.0;
+            return {
+                x: (touch1.clientX + touch2.clientX) / 2 - rect.left,
+                y: (touch1.clientY + touch2.clientY) / 2 - rect.top
+            };
+        };
+
+        // Get distance between two touches
+        const getTouchDistance = (touch1, touch2) => {
+            return Math.hypot(
+                touch2.clientX - touch1.clientX,
+                touch2.clientY - touch1.clientY
+            );
+        };
+        
+        // Constrain translation to keep image covering viewport
+        const constrainTranslation = (tx, ty, currentScale) => {
+            if (currentScale <= MIN_SCALE) {
+                return { x: 0, y: 0 };
             }
-        };
-        
-        // Calculate translation constraints to keep image always visible
-        const constrainTranslation = (newTranslateX, newTranslateY, currentScale) => {
+
             const rect = viewport.getBoundingClientRect();
-            const viewportWidth = rect.width;
-            const viewportHeight = rect.height;
-            
-            // Calculate scaled image dimensions
-            const scaledWidth = viewportWidth * currentScale;
-            const scaledHeight = viewportHeight * currentScale;
-            
-            // Calculate maximum allowed translation
-            const maxTranslateX = Math.max(0, (scaledWidth - viewportWidth) / 2);
-            const maxTranslateY = Math.max(0, (scaledHeight - viewportHeight) / 2);
-            
-            // Constrain translation within bounds
-            const constrainedX = Math.min(Math.max(newTranslateX, -maxTranslateX), maxTranslateX);
-            const constrainedY = Math.min(Math.max(newTranslateY, -maxTranslateY), maxTranslateY);
-            
-            return { x: constrainedX, y: constrainedY };
+            const scaledWidth = rect.width * currentScale;
+            const scaledHeight = rect.height * currentScale;
+
+            // Maximum translation is half the difference between scaled and viewport size
+            const maxTranslateX = (scaledWidth - rect.width) / 2;
+            const maxTranslateY = (scaledHeight - rect.height) / 2;
+
+            return {
+                x: Math.min(Math.max(tx, -maxTranslateX), maxTranslateX),
+                y: Math.min(Math.max(ty, -maxTranslateY), maxTranslateY)
+            };
         };
         
-        const updateTransform = () => {
-            const minScale = calculateMinScale();
-            
-            // Enforce minimum scale to prevent empty margins
-            if (scale < minScale) {
-                scale = minScale;
-                // Center the image when at minimum scale
-                translateX = 0;
-                translateY = 0;
-            } else {
-                // Apply translation constraints for zoomed images
+        const updateTransform = (applyConstraints = false) => {
+            // Only apply strict constraints when requested (on touchend)
+            if (applyConstraints) {
+                scale = Math.max(MIN_SCALE, Math.min(scale, MAX_SCALE));
                 const constrained = constrainTranslation(translateX, translateY, scale);
                 translateX = constrained.x;
                 translateY = constrained.y;
             }
-            
+
             const transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
             this.elements.baseLayer.style.transform = transform;
             this.elements.overlayLayer.style.transform = transform;
-            
+
+            // Update GPS marker position if visible
             if (this.elements.gpsMarker.style.display !== 'none' && this.currentPosition) {
                 const { x: gpsX, y: gpsY } = this.calculateGPSPixelPosition(
-                    this.currentPosition.lat, 
+                    this.currentPosition.lat,
                     this.currentPosition.lon
                 );
-                
+
                 if (gpsX >= 0 && gpsY >= 0) {
                     const finalX = gpsX * scale + translateX;
                     const finalY = gpsY * scale + translateY;
@@ -713,28 +719,24 @@ class ReliefMarinApp {
         
         viewport.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            
+
             if (e.touches.length === 2) {
-                isMultiTouch = true;
+                // Start pinch zoom
+                isPinching = true;
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
-                initialDistance = Math.hypot(
-                    touch2.clientX - touch1.clientX,
-                    touch2.clientY - touch1.clientY
-                );
+
+                initialDistance = getTouchDistance(touch1, touch2);
                 initialScale = scale;
-                
-                // Calculer le point focal initial entre les deux doigts
-                const rect = viewport.getBoundingClientRect();
-                initialFocalX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
-                initialFocalY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
-                
-                // Sauvegarder la translation initiale pour le zoom focal
-                initialTranslateXForZoom = translateX;
-                initialTranslateYForZoom = translateY;
-                
-            } else if (e.touches.length === 1) {
-                isMultiTouch = false;
+                initialTranslateX = translateX;
+                initialTranslateY = translateY;
+
+                const center = getTouchCenter(touch1, touch2);
+                pinchCenterX = center.x;
+                pinchCenterY = center.y;
+
+            } else if (e.touches.length === 1 && !isPinching) {
+                // Start pan
                 lastTouchX = e.touches[0].clientX;
                 lastTouchY = e.touches[0].clientY;
                 initialTranslateX = translateX;
@@ -744,82 +746,65 @@ class ReliefMarinApp {
         
         viewport.addEventListener('touchmove', (e) => {
             e.preventDefault();
-            
-            if (e.touches.length === 2 && isMultiTouch && initialDistance > 0) {
+
+            if (e.touches.length === 2 && isPinching) {
+                // Handle pinch zoom
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
-                const currentDistance = Math.hypot(
-                    touch2.clientX - touch1.clientX,
-                    touch2.clientY - touch1.clientY
-                );
-                
+
+                const currentDistance = getTouchDistance(touch1, touch2);
+                if (initialDistance === 0) return;
+
+                // Calculate new scale
                 const scaleChange = currentDistance / initialDistance;
-                const minScale = calculateMinScale();
-                const newScale = Math.min(Math.max(minScale, initialScale * scaleChange), 25);
-                
-                // Formule CORRECTE pour le zoom focal dynamique :
-                // Le point de l'image qui était sous initialFocalX/Y au début du geste
-                // doit rester sous le centre ACTUEL des doigts pendant tout le mouvement
-                
-                // 1. Calculer le centre ACTUEL entre les deux doigts
-                const rect = viewport.getBoundingClientRect();
-                const currentFocalX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
-                const currentFocalY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
-                
-                // 2. Identifier quel point de l'image était sous le centre des doigts au DÉBUT
-                const imagePointX = (initialFocalX - initialTranslateXForZoom) / initialScale;
-                const imagePointY = (initialFocalY - initialTranslateYForZoom) / initialScale;
-                
-                // 3. Garder ce point d'image sous le centre ACTUEL des doigts
-                translateX = currentFocalX - imagePointX * newScale;
-                translateY = currentFocalY - imagePointY * newScale;
-                
-                scale = newScale;
+                const newScale = initialScale * scaleChange;
+
+                // Clamp scale during gesture (soft limits)
+                scale = Math.max(MIN_SCALE * 0.8, Math.min(newScale, MAX_SCALE * 1.2));
+
+                // Calculate zoom around pinch center
+                // The point under pinchCenter should stay under pinchCenter
+                const scaleDelta = scale - initialScale;
+                translateX = initialTranslateX - (pinchCenterX * scaleDelta);
+                translateY = initialTranslateY - (pinchCenterY * scaleDelta);
+
                 updateTransform();
-                
-            } else if (e.touches.length === 1 && !isMultiTouch) {
+
+            } else if (e.touches.length === 1 && !isPinching) {
+                // Handle pan
                 const deltaX = e.touches[0].clientX - lastTouchX;
                 const deltaY = e.touches[0].clientY - lastTouchY;
-                
+
                 translateX = initialTranslateX + deltaX;
                 translateY = initialTranslateY + deltaY;
-                
+
                 updateTransform();
             }
         }, { passive: false });
         
         viewport.addEventListener('touchend', (e) => {
+            // Reset pinching flag when less than 2 touches remain
             if (e.touches.length < 2) {
-                isMultiTouch = false;
+                isPinching = false;
             }
-            
-            // Appliquer les contraintes avec une transition douce au relâchement
+
+            // Apply final constraints when all fingers are lifted
             if (e.touches.length === 0) {
-                // Activer les transitions CSS temporairement
+                // Enable smooth transition
                 this.elements.baseLayer.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
                 this.elements.overlayLayer.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                
-                // Appliquer les contraintes finales
-                const minScale = calculateMinScale();
-                if (scale < minScale) {
-                    scale = minScale;
-                    translateX = 0;
-                    translateY = 0;
-                } else {
-                    const constrained = constrainTranslation(translateX, translateY, scale);
-                    translateX = constrained.x;
-                    translateY = constrained.y;
-                }
-                
-                updateTransform();
-                
-                // Désactiver les transitions après l'animation
+
+                // Apply strict constraints
+                updateTransform(true);
+
+                // Remove transition after animation completes
                 setTimeout(() => {
                     this.elements.baseLayer.style.transition = '';
                     this.elements.overlayLayer.style.transition = '';
                 }, 300);
             }
-            
+
+            // Triple tap to reset (kept for backward compatibility)
             if (e.changedTouches.length === 1 && Date.now() - (this.lastTapTime || 0) < 300) {
                 this.tapCount = (this.tapCount || 0) + 1;
                 if (this.tapCount >= 3) {

@@ -38,12 +38,12 @@
             <!-- Transparency Control -->
             <div class="transparency-control" role="group" aria-labelledby="transparency-label">
                 <span class="transparency-label" id="transparency-label">Satellite</span>
-                <input type="range" class="transparency-slider" id="transparencySlider" 
-                       min="0" max="100" value="70"
+                <input type="range" class="transparency-slider" id="transparencySlider"
+                       min="0" max="100" value="50"
                        aria-label="Transparence du relief sous-marin"
                        aria-describedby="transparencyValue">
                 <span class="transparency-label">Relief</span>
-                <span class="transparency-value" id="transparencyValue" aria-live="polite">70%</span>
+                <span class="transparency-value" id="transparencyValue" aria-live="polite">50%</span>
             </div>
             
             <!-- Base Layer Toggle -->
@@ -58,14 +58,21 @@
         </div>
         
         <!-- GPS Button -->
-        <button class="gps-button" id="gpsButton" 
-                title="Localiser ma position" 
+        <button class="gps-button" id="gpsButton"
+                title="Localiser ma position"
                 aria-label="Obtenir ma position GPS"
                 aria-describedby="gps-status">
             📍
         </button>
         <div id="gps-status" class="sr-only" aria-live="polite"></div>
-        
+
+        <!-- Reset Zoom Button -->
+        <button class="reset-button" id="resetButton"
+                title="Réinitialiser le zoom"
+                aria-label="Réinitialiser le zoom et la position">
+            ↺
+        </button>
+
     </div>
 
     <!-- JavaScript -->
