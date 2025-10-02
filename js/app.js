@@ -680,15 +680,7 @@ class ReliefMarinApp {
             };
         };
         
-        const updateTransform = (applyConstraints = false) => {
-            // Only apply strict constraints when requested (on touchend)
-            if (applyConstraints) {
-                scale = Math.max(MIN_SCALE, Math.min(scale, MAX_SCALE));
-                const constrained = constrainTranslation(translateX, translateY, scale);
-                translateX = constrained.x;
-                translateY = constrained.y;
-            }
-
+        const updateTransform = () => {
             const transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
             this.elements.baseLayer.style.transform = transform;
             this.elements.overlayLayer.style.transform = transform;
@@ -707,6 +699,24 @@ class ReliefMarinApp {
                     this.elements.gpsMarker.style.top = `${finalY}px`;
                 }
             }
+        };
+
+        const applyConstraints = () => {
+            // Clamp scale to valid range
+            const newScale = Math.max(MIN_SCALE, Math.min(scale, MAX_SCALE));
+
+            // If scale changed, recalculate translation proportionally
+            if (newScale !== scale) {
+                const scaleRatio = newScale / scale;
+                translateX *= scaleRatio;
+                translateY *= scaleRatio;
+                scale = newScale;
+            }
+
+            // Constrain translation
+            const constrained = constrainTranslation(translateX, translateY, scale);
+            translateX = constrained.x;
+            translateY = constrained.y;
         };
         
         const resetTransform = () => {
@@ -762,21 +772,23 @@ class ReliefMarinApp {
                 // Clamp scale during gesture (soft limits)
                 scale = Math.max(MIN_SCALE * 0.8, Math.min(newScale, MAX_SCALE * 1.2));
 
-                // CORRECT FOCAL POINT ZOOM FORMULA:
-                // We want the point on the image that was at pinchCenter coordinates
-                // at the start to remain at pinchCenter coordinates after zoom
+                // Get CURRENT center between fingers (not initial!)
+                const currentCenter = getTouchCenter(touch1, touch2);
 
-                // 1. Find which point on the image was under pinchCenter at start
+                // CORRECT FOCAL POINT ZOOM FORMULA:
+                // The point on the image that was under the INITIAL center
+                // should now be under the CURRENT center (following the fingers)
+
+                // 1. Find which point on the image was under the initial pinch center
                 //    In image coordinates: imagePoint = (screenPoint - translate) / scale
                 const imagePointX = (pinchCenterX - initialTranslateX) / initialScale;
                 const imagePointY = (pinchCenterY - initialTranslateY) / initialScale;
 
-                // 2. Calculate where this image point should be after the new scale
-                //    to keep it under pinchCenter: screenPoint = translate + imagePoint * scale
-                //    So: pinchCenter = newTranslate + imagePoint * newScale
-                //    Therefore: newTranslate = pinchCenter - imagePoint * newScale
-                translateX = pinchCenterX - imagePointX * scale;
-                translateY = pinchCenterY - imagePointY * scale;
+                // 2. Calculate translation to keep this image point under the CURRENT center
+                //    currentCenter = newTranslate + imagePoint * newScale
+                //    Therefore: newTranslate = currentCenter - imagePoint * newScale
+                translateX = currentCenter.x - imagePointX * scale;
+                translateY = currentCenter.y - imagePointY * scale;
 
                 updateTransform();
 
@@ -800,12 +812,15 @@ class ReliefMarinApp {
 
             // Apply final constraints when all fingers are lifted
             if (e.touches.length === 0) {
+                // Apply constraints
+                applyConstraints();
+
                 // Enable smooth transition
                 this.elements.baseLayer.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
                 this.elements.overlayLayer.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
 
-                // Apply strict constraints
-                updateTransform(true);
+                // Update transform with constraints applied
+                updateTransform();
 
                 // Remove transition after animation completes
                 setTimeout(() => {
