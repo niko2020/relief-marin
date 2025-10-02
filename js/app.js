@@ -762,11 +762,21 @@ class ReliefMarinApp {
                 // Clamp scale during gesture (soft limits)
                 scale = Math.max(MIN_SCALE * 0.8, Math.min(newScale, MAX_SCALE * 1.2));
 
-                // Calculate zoom around pinch center
-                // The point under pinchCenter should stay under pinchCenter
-                const scaleDelta = scale - initialScale;
-                translateX = initialTranslateX - (pinchCenterX * scaleDelta);
-                translateY = initialTranslateY - (pinchCenterY * scaleDelta);
+                // CORRECT FOCAL POINT ZOOM FORMULA:
+                // We want the point on the image that was at pinchCenter coordinates
+                // at the start to remain at pinchCenter coordinates after zoom
+
+                // 1. Find which point on the image was under pinchCenter at start
+                //    In image coordinates: imagePoint = (screenPoint - translate) / scale
+                const imagePointX = (pinchCenterX - initialTranslateX) / initialScale;
+                const imagePointY = (pinchCenterY - initialTranslateY) / initialScale;
+
+                // 2. Calculate where this image point should be after the new scale
+                //    to keep it under pinchCenter: screenPoint = translate + imagePoint * scale
+                //    So: pinchCenter = newTranslate + imagePoint * newScale
+                //    Therefore: newTranslate = pinchCenter - imagePoint * newScale
+                translateX = pinchCenterX - imagePointX * scale;
+                translateY = pinchCenterY - imagePointY * scale;
 
                 updateTransform();
 
