@@ -660,6 +660,23 @@ class ReliefMarinApp {
             );
         };
         
+        // Check if translation needs constraining
+        const needsConstraining = (tx, ty, currentScale) => {
+            if (currentScale <= MIN_SCALE) {
+                return tx !== 0 || ty !== 0;
+            }
+
+            const rect = viewport.getBoundingClientRect();
+            const scaledWidth = rect.width * currentScale;
+            const scaledHeight = rect.height * currentScale;
+
+            const maxTranslateX = (scaledWidth - rect.width) / 2;
+            const maxTranslateY = (scaledHeight - rect.height) / 2;
+
+            return tx < -maxTranslateX - 50 || tx > maxTranslateX + 50 ||
+                   ty < -maxTranslateY - 50 || ty > maxTranslateY + 50;
+        };
+
         // Constrain translation to keep image covering viewport
         const constrainTranslation = (tx, ty, currentScale) => {
             if (currentScale <= MIN_SCALE) {
@@ -670,7 +687,6 @@ class ReliefMarinApp {
             const scaledWidth = rect.width * currentScale;
             const scaledHeight = rect.height * currentScale;
 
-            // Maximum translation is half the difference between scaled and viewport size
             const maxTranslateX = (scaledWidth - rect.width) / 2;
             const maxTranslateY = (scaledHeight - rect.height) / 2;
 
@@ -702,30 +718,34 @@ class ReliefMarinApp {
         };
 
         const applyConstraints = () => {
-            const oldScale = scale;
+            // Only clamp scale if outside valid range
+            if (scale < MIN_SCALE) {
+                scale = MIN_SCALE;
+                translateX = 0;
+                translateY = 0;
+                return;
+            }
 
-            // Clamp scale to valid range
-            scale = Math.max(MIN_SCALE, Math.min(scale, MAX_SCALE));
-
-            // If scale was clamped, adjust translation to keep center point stable
-            if (scale !== oldScale) {
+            if (scale > MAX_SCALE) {
+                // Keep center point when clamping max scale
                 const rect = viewport.getBoundingClientRect();
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
 
-                // Find the image point at viewport center with old scale
-                const imagePointX = (centerX - translateX) / oldScale;
-                const imagePointY = (centerY - translateY) / oldScale;
+                const imagePointX = (centerX - translateX) / scale;
+                const imagePointY = (centerY - translateY) / scale;
 
-                // Keep that point at center with new scale
+                scale = MAX_SCALE;
                 translateX = centerX - imagePointX * scale;
                 translateY = centerY - imagePointY * scale;
             }
 
-            // Constrain translation to keep image visible
-            const constrained = constrainTranslation(translateX, translateY, scale);
-            translateX = constrained.x;
-            translateY = constrained.y;
+            // Only apply translation constraints if significantly out of bounds
+            if (needsConstraining(translateX, translateY, scale)) {
+                const constrained = constrainTranslation(translateX, translateY, scale);
+                translateX = constrained.x;
+                translateY = constrained.y;
+            }
         };
         
         const resetTransform = () => {
