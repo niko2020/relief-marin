@@ -702,18 +702,27 @@ class ReliefMarinApp {
         };
 
         const applyConstraints = () => {
-            // Clamp scale to valid range
-            const newScale = Math.max(MIN_SCALE, Math.min(scale, MAX_SCALE));
+            const oldScale = scale;
 
-            // If scale changed, recalculate translation proportionally
-            if (newScale !== scale) {
-                const scaleRatio = newScale / scale;
-                translateX *= scaleRatio;
-                translateY *= scaleRatio;
-                scale = newScale;
+            // Clamp scale to valid range
+            scale = Math.max(MIN_SCALE, Math.min(scale, MAX_SCALE));
+
+            // If scale was clamped, adjust translation to keep center point stable
+            if (scale !== oldScale) {
+                const rect = viewport.getBoundingClientRect();
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                // Find the image point at viewport center with old scale
+                const imagePointX = (centerX - translateX) / oldScale;
+                const imagePointY = (centerY - translateY) / oldScale;
+
+                // Keep that point at center with new scale
+                translateX = centerX - imagePointX * scale;
+                translateY = centerY - imagePointY * scale;
             }
 
-            // Constrain translation
+            // Constrain translation to keep image visible
             const constrained = constrainTranslation(translateX, translateY, scale);
             translateX = constrained.x;
             translateY = constrained.y;
@@ -765,30 +774,32 @@ class ReliefMarinApp {
                 const currentDistance = getTouchDistance(touch1, touch2);
                 if (initialDistance === 0) return;
 
-                // Calculate new scale
+                // Calculate new scale based on distance change
                 const scaleChange = currentDistance / initialDistance;
                 const newScale = initialScale * scaleChange;
 
                 // Clamp scale during gesture (soft limits)
                 scale = Math.max(MIN_SCALE * 0.8, Math.min(newScale, MAX_SCALE * 1.2));
 
-                // Get CURRENT center between fingers (not initial!)
+                // Get CURRENT center between fingers
                 const currentCenter = getTouchCenter(touch1, touch2);
 
-                // CORRECT FOCAL POINT ZOOM FORMULA:
-                // The point on the image that was under the INITIAL center
-                // should now be under the CURRENT center (following the fingers)
-
-                // 1. Find which point on the image was under the initial pinch center
-                //    In image coordinates: imagePoint = (screenPoint - translate) / scale
+                // CORRECT PINCH-TO-ZOOM FORMULA (Google Maps style):
+                // 1. Identify which point on the image was under pinchCenter at the START
                 const imagePointX = (pinchCenterX - initialTranslateX) / initialScale;
                 const imagePointY = (pinchCenterY - initialTranslateY) / initialScale;
 
-                // 2. Calculate translation to keep this image point under the CURRENT center
-                //    currentCenter = newTranslate + imagePoint * newScale
-                //    Therefore: newTranslate = currentCenter - imagePoint * newScale
-                translateX = currentCenter.x - imagePointX * scale;
-                translateY = currentCenter.y - imagePointY * scale;
+                // 2. Calculate translation to zoom around that fixed point
+                //    After zoom, imagePoint should still be at pinchCenter coords
+                const zoomTranslateX = pinchCenterX - imagePointX * scale;
+                const zoomTranslateY = pinchCenterY - imagePointY * scale;
+
+                // 3. Add pan offset if fingers moved during pinch
+                const panDeltaX = currentCenter.x - pinchCenterX;
+                const panDeltaY = currentCenter.y - pinchCenterY;
+
+                translateX = zoomTranslateX + panDeltaX;
+                translateY = zoomTranslateY + panDeltaY;
 
                 updateTransform();
 
