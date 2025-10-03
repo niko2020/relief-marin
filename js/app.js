@@ -660,25 +660,9 @@ class ReliefMarinApp {
             );
         };
         
-        // Check if translation needs constraining
-        const needsConstraining = (tx, ty, currentScale) => {
-            if (currentScale <= MIN_SCALE) {
-                return tx !== 0 || ty !== 0;
-            }
-
-            const rect = viewport.getBoundingClientRect();
-            const scaledWidth = rect.width * currentScale;
-            const scaledHeight = rect.height * currentScale;
-
-            const maxTranslateX = (scaledWidth - rect.width) / 2;
-            const maxTranslateY = (scaledHeight - rect.height) / 2;
-
-            return tx < -maxTranslateX - 50 || tx > maxTranslateX + 50 ||
-                   ty < -maxTranslateY - 50 || ty > maxTranslateY + 50;
-        };
-
         // Constrain translation to keep image covering viewport
         const constrainTranslation = (tx, ty, currentScale) => {
+            // At minimum scale, always center
             if (currentScale <= MIN_SCALE) {
                 return { x: 0, y: 0 };
             }
@@ -687,8 +671,16 @@ class ReliefMarinApp {
             const scaledWidth = rect.width * currentScale;
             const scaledHeight = rect.height * currentScale;
 
-            const maxTranslateX = (scaledWidth - rect.width) / 2;
-            const maxTranslateY = (scaledHeight - rect.height) / 2;
+            // Only constrain if image is larger than viewport
+            // If image is smaller, it means we're at min scale and should center
+            if (scaledWidth <= rect.width && scaledHeight <= rect.height) {
+                return { x: 0, y: 0 };
+            }
+
+            // Calculate max allowed translation to keep image filling viewport
+            // Image edges should never go inside viewport boundaries
+            const maxTranslateX = Math.max(0, (scaledWidth - rect.width) / 2);
+            const maxTranslateY = Math.max(0, (scaledHeight - rect.height) / 2);
 
             return {
                 x: Math.min(Math.max(tx, -maxTranslateX), maxTranslateX),
@@ -717,37 +709,6 @@ class ReliefMarinApp {
             }
         };
 
-        const applyConstraints = () => {
-            // Only clamp scale if outside valid range
-            if (scale < MIN_SCALE) {
-                scale = MIN_SCALE;
-                translateX = 0;
-                translateY = 0;
-                return;
-            }
-
-            if (scale > MAX_SCALE) {
-                // Keep center point when clamping max scale
-                const rect = viewport.getBoundingClientRect();
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-
-                const imagePointX = (centerX - translateX) / scale;
-                const imagePointY = (centerY - translateY) / scale;
-
-                scale = MAX_SCALE;
-                translateX = centerX - imagePointX * scale;
-                translateY = centerY - imagePointY * scale;
-            }
-
-            // Only apply translation constraints if significantly out of bounds
-            if (needsConstraining(translateX, translateY, scale)) {
-                const constrained = constrainTranslation(translateX, translateY, scale);
-                translateX = constrained.x;
-                translateY = constrained.y;
-            }
-        };
-        
         const resetTransform = () => {
             scale = 1;
             translateX = 0;
@@ -798,8 +759,8 @@ class ReliefMarinApp {
                 const scaleChange = currentDistance / initialDistance;
                 const newScale = initialScale * scaleChange;
 
-                // Clamp scale during gesture (soft limits)
-                scale = Math.max(MIN_SCALE * 0.8, Math.min(newScale, MAX_SCALE * 1.2));
+                // Clamp scale during gesture - STRICT limits (no soft bounds)
+                scale = Math.max(MIN_SCALE, Math.min(newScale, MAX_SCALE));
 
                 // Get CURRENT center between fingers
                 const currentCenter = getTouchCenter(touch1, touch2);
@@ -818,8 +779,13 @@ class ReliefMarinApp {
                 const panDeltaX = currentCenter.x - pinchCenterX;
                 const panDeltaY = currentCenter.y - pinchCenterY;
 
-                translateX = zoomTranslateX + panDeltaX;
-                translateY = zoomTranslateY + panDeltaY;
+                const newTranslateX = zoomTranslateX + panDeltaX;
+                const newTranslateY = zoomTranslateY + panDeltaY;
+
+                // Apply constraints in real-time during pinch too
+                const constrained = constrainTranslation(newTranslateX, newTranslateY, scale);
+                translateX = constrained.x;
+                translateY = constrained.y;
 
                 updateTransform();
 
@@ -828,8 +794,13 @@ class ReliefMarinApp {
                 const deltaX = e.touches[0].clientX - lastTouchX;
                 const deltaY = e.touches[0].clientY - lastTouchY;
 
-                translateX = initialTranslateX + deltaX;
-                translateY = initialTranslateY + deltaY;
+                const newTranslateX = initialTranslateX + deltaX;
+                const newTranslateY = initialTranslateY + deltaY;
+
+                // Apply constraints in real-time to prevent going out of bounds
+                const constrained = constrainTranslation(newTranslateX, newTranslateY, scale);
+                translateX = constrained.x;
+                translateY = constrained.y;
 
                 updateTransform();
             }
@@ -841,24 +812,9 @@ class ReliefMarinApp {
                 isPinching = false;
             }
 
-            // Apply final constraints when all fingers are lifted
-            if (e.touches.length === 0) {
-                // Apply constraints
-                applyConstraints();
-
-                // Enable smooth transition
-                this.elements.baseLayer.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                this.elements.overlayLayer.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-
-                // Update transform with constraints applied
-                updateTransform();
-
-                // Remove transition after animation completes
-                setTimeout(() => {
-                    this.elements.baseLayer.style.transition = '';
-                    this.elements.overlayLayer.style.transition = '';
-                }, 300);
-            }
+            // NO CONSTRAINTS AT TOUCHEND!
+            // All constraints are applied in real-time during touchmove
+            // When fingers are lifted, image stays exactly where it is
 
             // Triple tap to reset (kept for backward compatibility)
             if (e.changedTouches.length === 1 && Date.now() - (this.lastTapTime || 0) < 300) {
