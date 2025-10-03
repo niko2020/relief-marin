@@ -779,14 +779,11 @@ class ReliefMarinApp {
                 const panDeltaX = currentCenter.x - pinchCenterX;
                 const panDeltaY = currentCenter.y - pinchCenterY;
 
-                const newTranslateX = zoomTranslateX + panDeltaX;
-                const newTranslateY = zoomTranslateY + panDeltaY;
+                translateX = zoomTranslateX + panDeltaX;
+                translateY = zoomTranslateY + panDeltaY;
 
-                // Apply constraints in real-time during pinch too
-                const constrained = constrainTranslation(newTranslateX, newTranslateY, scale);
-                translateX = constrained.x;
-                translateY = constrained.y;
-
+                // NO constraints during pinch - only during touchend if needed
+                // This prevents jumps when fingers are lifted
                 updateTransform();
 
             } else if (e.touches.length === 1 && !isPinching) {
@@ -812,9 +809,56 @@ class ReliefMarinApp {
                 isPinching = false;
             }
 
-            // NO CONSTRAINTS AT TOUCHEND!
-            // All constraints are applied in real-time during touchmove
-            // When fingers are lifted, image stays exactly where it is
+            // Apply minimal constraints only when ALL fingers are lifted
+            // and ONLY if really out of bounds
+            if (e.touches.length === 0) {
+                const beforeTranslateX = translateX;
+                const beforeTranslateY = translateY;
+                const beforeScale = scale;
+
+                // Clamp scale if outside limits
+                if (scale < MIN_SCALE) {
+                    scale = MIN_SCALE;
+                    translateX = 0;
+                    translateY = 0;
+                } else if (scale > MAX_SCALE) {
+                    const rect = viewport.getBoundingClientRect();
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const imagePointX = (centerX - translateX) / scale;
+                    const imagePointY = (centerY - translateY) / scale;
+                    scale = MAX_SCALE;
+                    translateX = centerX - imagePointX * scale;
+                    translateY = centerY - imagePointY * scale;
+                }
+
+                // Only constrain translation if image would show empty space
+                const constrained = constrainTranslation(translateX, translateY, scale);
+
+                // Only apply if significantly different (>5px)
+                const deltaX = Math.abs(constrained.x - translateX);
+                const deltaY = Math.abs(constrained.y - translateY);
+
+                if (deltaX > 5 || deltaY > 5) {
+                    translateX = constrained.x;
+                    translateY = constrained.y;
+                }
+
+                // Only animate if something changed
+                const hasChanged = beforeTranslateX !== translateX ||
+                                   beforeTranslateY !== translateY ||
+                                   beforeScale !== scale;
+
+                if (hasChanged) {
+                    this.elements.baseLayer.style.transition = 'transform 0.2s ease-out';
+                    this.elements.overlayLayer.style.transition = 'transform 0.2s ease-out';
+                    updateTransform();
+                    setTimeout(() => {
+                        this.elements.baseLayer.style.transition = '';
+                        this.elements.overlayLayer.style.transition = '';
+                    }, 200);
+                }
+            }
 
             // Triple tap to reset (kept for backward compatibility)
             if (e.changedTouches.length === 1 && Date.now() - (this.lastTapTime || 0) < 300) {
